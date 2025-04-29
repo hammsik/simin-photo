@@ -49,13 +49,16 @@ export const Intro = () => {
   return (
     <div className="size-full justify-between items-center flex flex-col">
       <CircleGenerator />
-      <div className="flex flex-col justify-center items-center gap-4 w-full">
-        <h1 className="font-play text-6xl font-stretch-50% text-[#B89A51] font-semibold">
+      <div className="flex flex-col justify-center items-center gap-6 w-full">
+        <h1 className="font-play text-8xl font-stretch-50% text-[#B89A51] font-semibold">
           Simin Photo Booth
         </h1>
-        <p className="font-extralight text-[#B89A51] mb-8">
+        <p className="font-extralight text-2xl text-[#b39344] mb-12">
           시민의교회 청년부 포토부스에 오신 것을 환영합니다
         </p>
+        <motion.button whileHover={{ scale: 1.2 }} className=" cursor-pointer">
+          <img src="/camera.png" alt="Camera" className="w-24 h-24" />
+        </motion.button>
       </div>
       <CircleGenerator />
     </div>
