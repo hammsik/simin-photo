@@ -1,4 +1,4 @@
-import { app, BrowserWindow } from "electron";
+import { ipcMain, app, BrowserWindow } from "electron";
 import { fileURLToPath } from "node:url";
 import path from "node:path";
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
@@ -10,7 +10,6 @@ process.env.VITE_PUBLIC = VITE_DEV_SERVER_URL ? path.join(process.env.APP_ROOT, 
 let win;
 function createWindow() {
   win = new BrowserWindow({
-    // 창 크기 최대로
     width: 800,
     height: 600,
     icon: path.join(process.env.VITE_PUBLIC, "electron-vite.svg"),
@@ -27,6 +26,23 @@ function createWindow() {
     win.loadFile(path.join(RENDERER_DIST, "index.html"));
   }
 }
+function createLiveWindow() {
+  const cameraWin = new BrowserWindow({
+    width: 1024,
+    height: 768,
+    icon: path.join(process.env.VITE_PUBLIC, "electron-vite.svg"),
+    transparent: true,
+    frame: false,
+    webPreferences: {
+      preload: path.join(__dirname, "preload.mjs")
+    }
+  });
+  const url = VITE_DEV_SERVER_URL ? `${VITE_DEV_SERVER_URL}#/live` : `file://${path.join(RENDERER_DIST, "index.html")}#/camera`;
+  cameraWin.loadURL(url);
+}
+ipcMain.on("open-camera-window", () => {
+  createLiveWindow();
+});
 app.on("window-all-closed", () => {
   if (process.platform !== "darwin") {
     app.quit();

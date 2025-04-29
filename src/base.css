@@ -3,3 +3,8 @@
 @theme {
   --font-play: "Playfair Display", "sans-serif";
 }
+
+.draggable {
+  cursor: grab;
+  -webkit-app-region: drag;
+}

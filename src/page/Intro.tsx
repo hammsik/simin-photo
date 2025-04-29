@@ -23,13 +23,13 @@ const CircleGenerator = () => {
       setCircleList((prev) => {
         const newList = [...prev, (prev[prev.length - 1] ?? 0) + 1];
         if (newList.length > 20) {
-          return newList.slice(-20); // 가장 최근 3개만 유지
+          return newList.slice(-20); // 가장 최근 20개만 유지
         }
         return newList;
       });
     }, 500);
     return () => clearInterval(interval);
-  }, []); // direction이 변경될 때만 effect 재실행
+  }, []);
 
   return (
     <div className={`w-full bg-black h-24 relative`}>
@@ -46,6 +46,11 @@ const CircleGenerator = () => {
 };
 
 export const Intro = () => {
+  const openCameraWindow = () => {
+    // Electron의 ipcRenderer를 통해 메인 프로세스에 새 창 요청
+    window.ipcRenderer.send("open-camera-window");
+  };
+
   return (
     <div className="size-full justify-between items-center flex flex-col">
       <CircleGenerator />
@@ -56,7 +61,11 @@ export const Intro = () => {
         <p className="font-extralight text-2xl text-[#b39344] mb-12">
           시민의교회 청년부 포토부스에 오신 것을 환영합니다
         </p>
-        <motion.button whileHover={{ scale: 1.2 }} className=" cursor-pointer">
+        <motion.button
+          whileHover={{ scale: 1.2 }}
+          className="cursor-pointer"
+          onClick={openCameraWindow}
+        >
           <img src="/camera.png" alt="Camera" className="w-24 h-24" />
         </motion.button>
       </div>
