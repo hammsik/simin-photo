@@ -4,6 +4,7 @@ import { HashRouter as Router, Routes, Route } from "react-router-dom";
 import App from "./App.tsx";
 import { LiveView } from "./page/LiveView.tsx";
 import "./base.css";
+import { Shot } from "./page/Shot.tsx";
 
 ReactDOM.createRoot(document.getElementById("root")!).render(
   <React.StrictMode>
@@ -11,6 +12,7 @@ ReactDOM.createRoot(document.getElementById("root")!).render(
       <Routes>
         <Route path="/" element={<App />} />
         <Route path="/live" element={<LiveView />} />
+        <Route path="/shot" element={<Shot />} />
       </Routes>
     </Router>
   </React.StrictMode>

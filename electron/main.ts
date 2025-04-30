@@ -1,4 +1,4 @@
-import { app, BrowserWindow, ipcMain } from "electron";
+import { app, BrowserWindow, desktopCapturer, ipcMain } from "electron";
 import { fileURLToPath } from "node:url";
 import path from "node:path";
 
@@ -47,8 +47,22 @@ function createLiveWindow() {
     frame: false,
     webPreferences: {
       preload: path.join(__dirname, "preload.mjs"),
+      // 화면 캡쳐를 위해 필요한 설정
+      nodeIntegration: true,
+      contextIsolation: true,
+      enableRemoteModule: true, // remote 모듈 활성화
     },
   });
+
+  // 권한 설정
+  cameraWin.webContents.session.setPermissionRequestHandler(
+    (webContents, permission, callback) => {
+      if (permission === "media") {
+        return callback(true);
+      }
+      callback(false);
+    }
+  );
 
   const url = VITE_DEV_SERVER_URL
     ? `${VITE_DEV_SERVER_URL}#/live`
@@ -60,6 +74,15 @@ function createLiveWindow() {
 // IPC 이벤트 처리
 ipcMain.on("open-camera-window", () => {
   createLiveWindow();
+});
+
+// IPC 핸들러 설정
+ipcMain.handle("capture-screen", async () => {
+  const sources = await desktopCapturer.getSources({
+    types: ["screen"],
+    thumbnailSize: { width: 1920, height: 1080 }, // 원하는 크기로 조정
+  });
+  return sources;
 });
 
 app.on("window-all-closed", () => {

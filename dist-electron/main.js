@@ -1,4 +1,4 @@
-import { ipcMain, app, BrowserWindow } from "electron";
+import { ipcMain, desktopCapturer, app, BrowserWindow } from "electron";
 import { fileURLToPath } from "node:url";
 import path from "node:path";
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
@@ -34,14 +34,35 @@ function createLiveWindow() {
     transparent: true,
     frame: false,
     webPreferences: {
-      preload: path.join(__dirname, "preload.mjs")
+      preload: path.join(__dirname, "preload.mjs"),
+      // 화면 캡쳐를 위해 필요한 설정
+      nodeIntegration: true,
+      contextIsolation: true,
+      enableRemoteModule: true
+      // remote 모듈 활성화
     }
   });
+  cameraWin.webContents.session.setPermissionRequestHandler(
+    (webContents, permission, callback) => {
+      if (permission === "media") {
+        return callback(true);
+      }
+      callback(false);
+    }
+  );
   const url = VITE_DEV_SERVER_URL ? `${VITE_DEV_SERVER_URL}#/live` : `file://${path.join(RENDERER_DIST, "index.html")}#/camera`;
   cameraWin.loadURL(url);
 }
 ipcMain.on("open-camera-window", () => {
   createLiveWindow();
+});
+ipcMain.handle("capture-screen", async () => {
+  const sources = await desktopCapturer.getSources({
+    types: ["screen"],
+    thumbnailSize: { width: 1920, height: 1080 }
+    // 원하는 크기로 조정
+  });
+  return sources;
 });
 app.on("window-all-closed", () => {
   if (process.platform !== "darwin") {
