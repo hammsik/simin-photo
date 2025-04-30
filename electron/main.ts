@@ -69,6 +69,14 @@ function createLiveWindow() {
     : `file://${path.join(RENDERER_DIST, "index.html")}#/camera`;
 
   cameraWin.loadURL(url);
+
+  // LiveView에서 캡처한 이미지를 메인 윈도우로 전달
+  ipcMain.on("image-captured", (_, imageUrl) => {
+    if (win && !win.isDestroyed()) {
+      console.log("Wef");
+      win.webContents.send("image-captured", imageUrl);
+    }
+  });
 }
 
 // IPC 이벤트 처리

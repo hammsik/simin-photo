@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect, useRef } from "react";
 
 export const Shot = () => {
   // 촬영한 사진을 저장할 배열
@@ -6,37 +6,111 @@ export const Shot = () => {
   const [isCapturing, setIsCapturing] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  const captureScreen = async () => {
-    setIsCapturing(true);
-    setError(null);
+  // 리스너가 이미 등록되었는지 추적하는 ref
+  const listenerRegisteredRef = useRef(false);
 
-    try {
-      // preload에서 노출된 captureScreen 메서드 사용
-      const sources = await window.ipcRenderer.captureScreen();
+  console.log(window.screen.height);
+  // 크롭할 영역을 정의 (예: 중앙에서 500x500 크기)
+  const cropConfig = {
+    x: 0, // 이미지 왼쪽에서 시작 위치 (픽셀)
+    y: 65, // 이미지 상단에서 시작 위치 (픽셀)
+    height: 1000, // 크롭할 높이 (픽셀)
+    width: (1000 * 3) / 2, // 크롭할 너비 (픽셀)
+  };
 
-      if (sources && sources.length > 0) {
-        // 첫 번째 스크린 소스 사용 (메인 디스플레이)
-        console.log(sources);
-        const source = sources[0];
+  // 이미지 크롭 함수
+  const cropImage = (imageUrl: string): Promise<string> => {
+    return new Promise((resolve, reject) => {
+      const img = new Image();
+      img.onload = () => {
+        try {
+          // 캔버스 생성
+          const canvas = document.createElement("canvas");
+          const ctx = canvas.getContext("2d");
+          if (!ctx) {
+            reject(new Error("Canvas context를 가져올 수 없습니다."));
+            return;
+          }
 
-        // 이미지 데이터 URL을 직접 사용 (크롭 없이)
-        const fullScreenImageUrl = source.thumbnail.toDataURL();
+          // 크롭 영역이 이미지 범위를 벗어나는지 확인
+          const cropX = Math.min(cropConfig.x, img.width - 10);
+          const cropY = Math.min(cropConfig.y, img.height - 10);
+          const cropWidth = Math.min(cropConfig.width, img.width - cropX);
+          const cropHeight = Math.min(cropConfig.height, img.height - cropY);
 
-        // 새 사진을 photos 배열에 추가
-        setPhotos((prevPhotos) => [...prevPhotos, fullScreenImageUrl]);
+          // 캔버스 크기 설정
+          canvas.width = cropWidth;
+          canvas.height = cropHeight;
 
-        console.log("전체 화면 캡쳐 성공!");
-      } else {
-        throw new Error("사용 가능한 화면 소스가 없습니다.");
+          // 이미지 크롭하여 캔버스에 그리기
+          ctx.drawImage(
+            img,
+            cropX,
+            cropY,
+            cropWidth,
+            cropHeight, // 소스 이미지의 영역
+            0,
+            0,
+            cropWidth,
+            cropHeight // 캔버스에 그릴 영역
+          );
+
+          // 캔버스를 이미지 URL로 변환
+          const croppedImageUrl = canvas.toDataURL("image/jpeg", 0.9);
+          resolve(croppedImageUrl);
+        } catch (error) {
+          reject(error);
+        }
+      };
+
+      img.onerror = (error) => {
+        reject(error);
+      };
+
+      // 이미지 로드 시작
+      img.src = imageUrl;
+    });
+  };
+
+  useEffect(() => {
+    console.log("이미지 수신 리스너 등록 시도");
+
+    // 이벤트 핸들러 함수 정의
+    const handleImageCaptured = async (_event: any, imageUrl: string) => {
+      console.log("이미지 수신됨!");
+      try {
+        setIsCapturing(true);
+        // 이미지 자동 크롭
+        const croppedImageUrl = await cropImage(imageUrl);
+        // 크롭된 이미지를 photos에 추가
+        setPhotos((prevPhotos) => [...prevPhotos, croppedImageUrl]);
+      } catch (err) {
+        console.error("이미지 크롭 중 오류 발생:", err);
+        setError("이미지를 크롭하는 동안 오류가 발생했습니다.");
+      } finally {
+        setIsCapturing(false);
       }
-    } catch (err) {
-      console.error("화면 캡쳐 중 오류 발생:", err);
-      setError(
-        err instanceof Error ? err.message : "알 수 없는 오류가 발생했습니다."
-      );
-    } finally {
-      setIsCapturing(false);
+    };
+
+    // 리스너가 이미 등록되어 있는지 확인
+    if (!listenerRegisteredRef.current) {
+      console.log("이미지 수신 리스너 등록 완료");
+      window.ipcRenderer.on("image-captured", handleImageCaptured);
+      listenerRegisteredRef.current = true;
+    } else {
+      console.log("이미지 수신 리스너가 이미 등록되어 있습니다.");
     }
+
+    // // 컴포넌트 언마운트 시 리스너 제거
+    // return () => {
+    //   console.log("이미지 수신 리스너 제거");
+    //   window.ipcRenderer.off("image-captured", handleImageCaptured);
+    //   listenerRegisteredRef.current = false;
+    // };
+  }, []);
+
+  const openCameraWindow = () => {
+    window.ipcRenderer.send("open-camera-window");
   };
 
   return (
@@ -54,7 +128,7 @@ export const Shot = () => {
           </p>
         ) : (
           photos.map((photo, index) => (
-            <div key={index} className="w-1/3 p-2">
+            <div key={index} className="w-100">
               <img
                 src={photo}
                 alt={`촬영한 사진 ${index + 1}`}
@@ -66,12 +140,11 @@ export const Shot = () => {
       </div>
 
       <button
-        className={`size-20 bg-black text-white rounded-md hover:bg-gray-800 mb-4 
-                   ${isCapturing ? "opacity-50 cursor-not-allowed" : ""}`}
-        onClick={captureScreen}
+        className="size-20 bg-black text-white rounded-md hover:bg-gray-800 mb-4"
+        onClick={openCameraWindow}
         disabled={isCapturing}
       >
-        {isCapturing ? "촬영중..." : "촬영"}
+        {isCapturing ? "처리 중..." : "카메라 열기"}
       </button>
     </div>
   );
