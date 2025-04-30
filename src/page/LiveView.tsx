@@ -11,7 +11,7 @@ export const LiveView = () => {
       >
         ✕
       </button>
-      <p className="absolute bottom-10 text-6xl right-10 text-white">1/2</p>
+      <p className="absolute bottom-20 text-6xl right-20 text-white">1/2</p>
     </div>
   );
 };
