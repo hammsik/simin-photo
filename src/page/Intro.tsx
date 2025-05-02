@@ -64,12 +64,14 @@ export const Intro = () => {
         <p className="font-extralight text-2xl text-[#b39344] mb-12">
           시민의교회 청년부 포토부스에 오신 것을 환영합니다
         </p>
-        <button onClick={() => openCameraWindow()}>창 띄우기</button>
         <motion.button
           whileHover={{ scale: 1.2 }}
           className="cursor-pointer"
           // onClick={openCameraWindow}
-          onClick={() => navigate("/shot")}
+          onClick={() => {
+            navigate("/shot");
+            openCameraWindow();
+          }}
         >
           <img src="/camera.png" alt="Camera" className="w-24 h-24" />
         </motion.button>
