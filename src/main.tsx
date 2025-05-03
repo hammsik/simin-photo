@@ -5,14 +5,18 @@ import App from "./App.tsx";
 import { LiveView } from "./page/LiveView.tsx";
 import "./base.css";
 import { Shot } from "./page/Shot.tsx";
+import { Intro } from "./page/Intro.tsx";
+import { Layout } from "./components/Layout.tsx";
 
 ReactDOM.createRoot(document.getElementById("root")!).render(
   <React.StrictMode>
     <Router>
       <Routes>
-        <Route path="/" element={<App />} />
+        <Route element={<Layout />}>
+          <Route path="/" element={<Intro />} />
+          <Route path="/shot" element={<Shot />} />
+        </Route>
         <Route path="/live" element={<LiveView />} />
-        <Route path="/shot" element={<Shot />} />
       </Routes>
     </Router>
   </React.StrictMode>

@@ -1,50 +1,5 @@
 import { motion } from "motion/react";
 import { useNavigate } from "react-router-dom";
-// import { useEffect, useState } from "react";
-
-// const CircleGenerator = () => {
-//   const [circleList, setCircleList] = useState<number[]>([]);
-//   const [screenWidth, setScreenWidth] = useState<number>(0);
-
-//   useEffect(() => {
-//     const handleResize = () => {
-//       setScreenWidth(window.innerWidth);
-//     };
-
-//     handleResize(); // 초기 화면 크기 설정
-//     window.addEventListener("resize", handleResize);
-
-//     return () => {
-//       window.removeEventListener("resize", handleResize);
-//     };
-//   }, []);
-
-//   useEffect(() => {
-//     const interval = setInterval(() => {
-//       setCircleList((prev) => {
-//         const newList = [...prev, (prev[prev.length - 1] ?? 0) + 1];
-//         if (newList.length > 20) {
-//           return newList.slice(-20); // 가장 최근 20개만 유지
-//         }
-//         return newList;
-//       });
-//     }, 500);
-//     return () => clearInterval(interval);
-//   }, []);
-
-//   return (
-//     <div className={`w-full bg-black h-24 relative`}>
-//       {circleList.map((circle) => (
-//         <motion.div
-//           className="absolute top-1/2 -translate-y-1/2 -right-8 rounded-xl bg-[#ECEAE9] h-12 w-10"
-//           key={circle}
-//           animate={{ opacity: 1, x: -(screenWidth + 100) }}
-//           transition={{ duration: 8, ease: "linear" }}
-//         />
-//       ))}
-//     </div>
-//   );
-// };
 
 export const Intro = () => {
   const openCameraWindow = () => {
@@ -56,7 +11,6 @@ export const Intro = () => {
 
   return (
     <div className="size-full justify-center items-center flex flex-col">
-      {/* <CircleGenerator /> */}
       <div className="flex flex-col justify-center items-center gap-6 w-full">
         <h1 className="font-play text-8xl font-stretch-50% text-[#B89A51] font-semibold">
           Simin Photo Booth
@@ -67,7 +21,6 @@ export const Intro = () => {
         <motion.button
           whileHover={{ scale: 1.2 }}
           className="cursor-pointer"
-          // onClick={openCameraWindow}
           onClick={() => {
             navigate("/shot");
             openCameraWindow();
@@ -76,7 +29,6 @@ export const Intro = () => {
           <img src="/camera.png" alt="Camera" className="w-24 h-24" />
         </motion.button>
       </div>
-      {/* <CircleGenerator /> */}
     </div>
   );
 };

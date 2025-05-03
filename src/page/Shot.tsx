@@ -191,7 +191,7 @@ export const Shot = () => {
   };
 
   return (
-    <div className="relative w-screen h-screen flex justify-center items-center bg-linear-to-bl from-[#cbcac8] to-[#ECEAE9]">
+    <div className="relative size-full flex justify-center items-center ">
       {error && (
         <div
           className="absolute top-0 w-full bg-red-100 text-red-700 p-2 mb-2 rounded"
@@ -200,7 +200,7 @@ export const Shot = () => {
           오류: {error}
         </div>
       )}
-      <div className="flex-1 h-full bg-amber-200 overflow-y-auto p-2">
+      <div className="flex-1 h-full  overflow-y-auto p-2">
         <div className="grid grid-cols-3 gap-2">
           {photos.length === 0 ? (
             <p className="text-gray-400 col-span-3 text-center p-4">
@@ -232,7 +232,7 @@ export const Shot = () => {
           )}
         </div>
       </div>
-      <div className="gap-10 flex-1 h-full bg-cyan-300 flex flex-col justify-center items-center">
+      <div className="gap-10 flex-1 h-full flex flex-col justify-center items-center">
         <div
           id="photo"
           className="relative w-[300px] h-[900px] bg-black flex flex-col items-center p-6 gap-4"
