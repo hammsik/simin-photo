@@ -2,6 +2,8 @@
 
 @theme {
   --font-play: 'Playfair Display', 'sans-serif';
+
+  --color-primary: #cbcac8;
 }
 
 .draggable {
