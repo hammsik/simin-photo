@@ -54,7 +54,6 @@ function createLiveWindow() {
   cameraWin.loadURL(url);
   ipcMain.on("image-captured", (_, imageUrl) => {
     if (win && !win.isDestroyed()) {
-      console.log("Wef");
       win.webContents.send("image-captured", imageUrl);
     }
   });

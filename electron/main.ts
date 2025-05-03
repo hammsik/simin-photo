@@ -1,17 +1,18 @@
-import { app, BrowserWindow, desktopCapturer, ipcMain } from "electron";
-import { fileURLToPath } from "node:url";
-import path from "node:path";
+import { app, BrowserWindow, desktopCapturer, ipcMain } from 'electron';
+import { fileURLToPath } from 'node:url';
+import path from 'node:path';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
-process.env.APP_ROOT = path.join(__dirname, "..");
+process.env.APP_ROOT = path.join(__dirname, '..');
 
-export const VITE_DEV_SERVER_URL = process.env["VITE_DEV_SERVER_URL"];
-export const MAIN_DIST = path.join(process.env.APP_ROOT, "dist-electron");
-export const RENDERER_DIST = path.join(process.env.APP_ROOT, "dist");
+export const VITE_DEV_SERVER_URL = process.env['VITE_DEV_SERVER_URL'];
+export const MAIN_DIST = path.join(process.env.APP_ROOT, 'dist-electron');
+export const RENDERER_DIST = path.join(process.env.APP_ROOT, 'dist');
 
-process.env.VITE_PUBLIC = VITE_DEV_SERVER_URL
-  ? path.join(process.env.APP_ROOT, "public")
+process.env.VITE_PUBLIC =
+  VITE_DEV_SERVER_URL ?
+    path.join(process.env.APP_ROOT, 'public')
   : RENDERER_DIST;
 
 let win: BrowserWindow | null;
@@ -20,20 +21,20 @@ function createWindow() {
   win = new BrowserWindow({
     width: 800,
     height: 600,
-    icon: path.join(process.env.VITE_PUBLIC, "electron-vite.svg"),
+    icon: path.join(process.env.VITE_PUBLIC, 'electron-vite.svg'),
     webPreferences: {
-      preload: path.join(__dirname, "preload.mjs"),
+      preload: path.join(__dirname, 'preload.mjs'),
     },
   });
 
-  win.webContents.on("did-finish-load", () => {
-    win?.webContents.send("main-process-message", new Date().toLocaleString());
+  win.webContents.on('did-finish-load', () => {
+    win?.webContents.send('main-process-message', new Date().toLocaleString());
   });
 
   if (VITE_DEV_SERVER_URL) {
     win.loadURL(VITE_DEV_SERVER_URL);
   } else {
-    win.loadFile(path.join(RENDERER_DIST, "index.html"));
+    win.loadFile(path.join(RENDERER_DIST, 'index.html'));
   }
 }
 
@@ -42,11 +43,11 @@ function createLiveWindow() {
   const cameraWin = new BrowserWindow({
     width: 1024,
     height: 768,
-    icon: path.join(process.env.VITE_PUBLIC, "electron-vite.svg"),
+    icon: path.join(process.env.VITE_PUBLIC, 'electron-vite.svg'),
     transparent: true,
     frame: false,
     webPreferences: {
-      preload: path.join(__dirname, "preload.mjs"),
+      preload: path.join(__dirname, 'preload.mjs'),
       // 화면 캡쳐를 위해 필요한 설정
       nodeIntegration: true,
       contextIsolation: true,
@@ -57,50 +58,50 @@ function createLiveWindow() {
   // 권한 설정
   cameraWin.webContents.session.setPermissionRequestHandler(
     (webContents, permission, callback) => {
-      if (permission === "media") {
+      if (permission === 'media') {
         return callback(true);
       }
       callback(false);
-    }
+    },
   );
 
-  const url = VITE_DEV_SERVER_URL
-    ? `${VITE_DEV_SERVER_URL}#/live`
-    : `file://${path.join(RENDERER_DIST, "index.html")}#/camera`;
+  const url =
+    VITE_DEV_SERVER_URL ?
+      `${VITE_DEV_SERVER_URL}#/live`
+    : `file://${path.join(RENDERER_DIST, 'index.html')}#/camera`;
 
   cameraWin.loadURL(url);
 
   // LiveView에서 캡처한 이미지를 메인 윈도우로 전달
-  ipcMain.on("image-captured", (_, imageUrl) => {
+  ipcMain.on('image-captured', (_, imageUrl) => {
     if (win && !win.isDestroyed()) {
-      console.log("Wef");
-      win.webContents.send("image-captured", imageUrl);
+      win.webContents.send('image-captured', imageUrl);
     }
   });
 }
 
 // IPC 이벤트 처리
-ipcMain.on("open-camera-window", () => {
+ipcMain.on('open-camera-window', () => {
   createLiveWindow();
 });
 
 // IPC 핸들러 설정
-ipcMain.handle("capture-screen", async () => {
+ipcMain.handle('capture-screen', async () => {
   const sources = await desktopCapturer.getSources({
-    types: ["screen"],
+    types: ['screen'],
     thumbnailSize: { width: 1920, height: 1080 }, // 원하는 크기로 조정
   });
   return sources;
 });
 
-app.on("window-all-closed", () => {
-  if (process.platform !== "darwin") {
+app.on('window-all-closed', () => {
+  if (process.platform !== 'darwin') {
     app.quit();
     win = null;
   }
 });
 
-app.on("activate", () => {
+app.on('activate', () => {
   if (BrowserWindow.getAllWindows().length === 0) {
     createWindow();
   }
