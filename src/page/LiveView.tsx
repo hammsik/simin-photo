@@ -5,6 +5,7 @@ import { motion } from 'motion/react';
 export const LiveView = () => {
   const [isCapturing, setIsCapturing] = useState(false);
   const [photoUrls, setPhotoUrls] = useState<string[]>([]);
+  const [shutterReleaseCnt, setShutterReleaseCnt] = useState(0);
   const [isFinished, setIsFinished] = useState(false);
 
   const captureScreen = async () => {
@@ -12,6 +13,7 @@ export const LiveView = () => {
 
     try {
       const sources = await window.ipcRenderer.captureScreen();
+      setShutterReleaseCnt((prev) => prev + 1);
 
       if (sources && sources.length > 0) {
         const source = sources[0];
@@ -94,7 +96,26 @@ export const LiveView = () => {
             </div>
           </motion.div>
         : <>
-            <div className='size-full'></div>
+            <div className='relative size-full'>
+              {photoUrls.length > 0 && (
+                <>
+                  <motion.div
+                    key={shutterReleaseCnt}
+                    className='absolute top-0 w-full bg-black'
+                    initial={{ height: 0 }}
+                    animate={{ height: [0, '50%', '50%', 0] }}
+                    transition={{ ease: 'linear', times: [0, 0.2, 0.8, 1] }}
+                  />
+                  <motion.div
+                    key={shutterReleaseCnt}
+                    className='absolute bottom-0 w-full bg-black'
+                    initial={{ height: 0 }}
+                    animate={{ height: [0, '50%', '50%', 0] }}
+                    transition={{ ease: 'linear', times: [0, 0.2, 0.8, 1] }}
+                  />
+                </>
+              )}
+            </div>
             <div className='bg-primary flex h-full w-[202px] flex-col items-center px-2 py-10'>
               <div className='flex size-full flex-col'>
                 {photoUrls.map((photoUrl, index) => (
