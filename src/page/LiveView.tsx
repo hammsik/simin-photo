@@ -53,10 +53,46 @@ export const LiveView = () => {
       <div className='flex size-full'>
         {isFinished ?
           <motion.div
-            className='bg-primary size-full'
+            className='bg-primary flex size-full flex-col items-center justify-center'
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
-          ></motion.div>
+          >
+            <div className='flex flex-col items-center justify-center gap-16'>
+              <div className='flex w-3/4 gap-10'>
+                {photoUrls.map((photoUrl, index) => (
+                  <motion.div
+                    key={index}
+                    className={`my-2 flex aspect-[3/2] w-full items-center justify-center`}
+                    initial={{ opacity: 0, y: 30 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: index * 0.04 }}
+                  >
+                    <img
+                      src={photoUrl}
+                      alt={`Captured ${index}`}
+                      className='size-full rounded-md object-contain'
+                    />
+                  </motion.div>
+                ))}
+              </div>
+              <motion.h1
+                className='text-5xl'
+                transition={{ delay: 0.4 }}
+                initial={{ opacity: 0, y: 30 }}
+                animate={{ opacity: 1, y: 0 }}
+              >
+                촬영이 완료되었습니다!
+              </motion.h1>
+              <motion.h2
+                className='text-3xl'
+                transition={{ delay: 0.6 }}
+                initial={{ opacity: 0, y: 30 }}
+                animate={{ opacity: 1, y: 0 }}
+              >
+                옆에서 사진과 프레임을 선택하고 인쇄해주세요!
+              </motion.h2>
+            </div>
+          </motion.div>
         : <>
             <div className='size-full'></div>
             <div className='bg-primary flex h-full w-[202px] flex-col items-center px-2 py-10'>
