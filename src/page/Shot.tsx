@@ -4,15 +4,11 @@ import { useState, useEffect, useRef } from 'react';
 export const Shot = () => {
   // 촬영한 사진을 저장할 배열
   const [photos, setPhotos] = useState<string[]>([]);
-  const [isCapturing, setIsCapturing] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
   const [selectedPhotos, setSelectedPhotos] = useState<string[]>([]);
   const [text, setText] = useState('');
   const [imageText, setImageText] = useState('');
-
-  // 리스너가 이미 등록되었는지 추적하는 ref
-  const listenerRegisteredRef = useRef(false);
 
   const printPhoto = () => {
     // 선택된 이미지가 없으면 인쇄 불가
@@ -87,39 +83,6 @@ export const Shot = () => {
   };
 
   console.log(window.screen.height);
-
-  useEffect(() => {
-    console.log('이미지 수신 리스너 등록 시도');
-
-    // 이벤트 핸들러 함수 정의
-    const handleImageCaptured = (_event: unknown, imageUrl: string) => {
-      try {
-        setIsCapturing(true);
-        setPhotos((prevPhotos) => [...prevPhotos, imageUrl]);
-      } catch (err) {
-        console.error('이미지 수신 중 오류 발생:', err);
-        setError('이미지를 수신하는 동안 오류가 발생했습니다.');
-      } finally {
-        setIsCapturing(false);
-      }
-    };
-
-    // 리스너가 이미 등록되어 있는지 확인
-    if (!listenerRegisteredRef.current) {
-      console.log('이미지 수신 리스너 등록 완료');
-      window.ipcRenderer.on('image-captured', handleImageCaptured);
-      listenerRegisteredRef.current = true;
-    } else {
-      console.log('이미지 수신 리스너가 이미 등록되어 있습니다.');
-    }
-
-    // // 컴포넌트 언마운트 시 리스너 제거
-    // return () => {
-    //   console.log("이미지 수신 리스너 제거");
-    //   window.ipcRenderer.off("image-captured", handleImageCaptured);
-    //   listenerRegisteredRef.current = false;
-    // };
-  }, []);
 
   return (
     <div className='relative flex size-full items-center justify-center'>

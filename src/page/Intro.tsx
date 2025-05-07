@@ -22,7 +22,7 @@ export const Intro = () => {
           whileHover={{ scale: 1.2 }}
           className='cursor-pointer'
           onClick={() => {
-            navigate('/shot');
+            navigate('/during-shot');
             openCameraWindow();
           }}
         >

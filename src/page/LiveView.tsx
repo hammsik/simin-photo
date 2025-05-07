@@ -78,7 +78,7 @@ export const LiveView = () => {
                 ))}
               </div>
               <motion.h1
-                className='text-5xl'
+                className='text-5xl font-bold'
                 transition={{ delay: 0.4 }}
                 initial={{ opacity: 0, y: 30 }}
                 animate={{ opacity: 1, y: 0 }}
@@ -86,7 +86,7 @@ export const LiveView = () => {
                 촬영이 완료되었습니다!
               </motion.h1>
               <motion.h2
-                className='text-3xl'
+                className='text-3xl font-medium'
                 transition={{ delay: 0.6 }}
                 initial={{ opacity: 0, y: 30 }}
                 animate={{ opacity: 1, y: 0 }}

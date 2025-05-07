@@ -43,7 +43,7 @@ export const cropImage = (imageUrl: string): Promise<string> => {
         );
 
         // 캔버스를 이미지 URL로 변환
-        const croppedImageUrl = canvas.toDataURL('image/jpeg', 0.9);
+        const croppedImageUrl = canvas.toDataURL('image/jpeg', 1);
         resolve(croppedImageUrl);
       } catch (error) {
         reject(error);
