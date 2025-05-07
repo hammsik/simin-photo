@@ -1,6 +1,6 @@
 import { motion } from 'motion/react';
 import { useRef, useState } from 'react';
-import { useLocation } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 import { PhotoFrame } from '../components/PhotoFrame';
 import { useReactToPrint } from 'react-to-print';
 
@@ -13,6 +13,8 @@ const solidFrameUrls = [
 ];
 
 export const AfterShot = () => {
+  const navigate = useNavigate();
+
   const photos: string[] = useLocation().state?.photos; // 촬영한 사진들
 
   const [selectedPhotos, setSelectedPhotos] = useState<Array<string | null>>(
@@ -124,16 +126,16 @@ export const AfterShot = () => {
           </div>
         </div>
       </div>
-      <div className='flex h-full flex-col items-center justify-center gap-10 p-6 pr-20'>
+      <div className='flex h-full flex-col items-center justify-center gap-6 p-6 pr-20'>
         <PhotoFrame
           ref={photoRef}
           imageUrls={selectedPhotos}
           selectedFrame={selectedFrame}
           setImageUrls={setSelectedPhotos}
         />
-        <div className='flex flex-col gap-4'>
+        <div className='flex gap-4'>
           <button
-            className={`flex items-center justify-center rounded p-4 ${
+            className={`flex cursor-pointer items-center justify-center rounded p-4 ${
               selectedPhotos.length === 0 ?
                 'cursor-not-allowed bg-gray-300'
               : 'bg-blue-600 hover:bg-blue-700'
@@ -156,6 +158,16 @@ export const AfterShot = () => {
               />
             </svg>
             인쇄하기
+          </button>
+          <button
+            className={`flex cursor-pointer items-center justify-center rounded p-4 ${
+              selectedPhotos.length === 0 ?
+                'cursor-not-allowed bg-gray-300'
+              : 'bg-green-600 hover:bg-green-700'
+            } text-white`}
+            onClick={() => navigate('/complete')}
+          >
+            완료
           </button>
         </div>
       </div>

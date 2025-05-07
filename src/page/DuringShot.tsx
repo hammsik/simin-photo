@@ -39,6 +39,14 @@ export const DuringShot = () => {
     // };
   }, []);
 
+  // 편집하기 버튼 클릭 핸들러
+  const handleEditClick = () => {
+    // LiveView 새로고침을 위한 이벤트 전송
+    window.ipcRenderer.send('refresh-live-view');
+    // 편집 페이지로 이동
+    navigate('/after-shot', { state: { photos } });
+  };
+
   return (
     <div className='flex size-full flex-col items-center justify-center gap-20'>
       {photos.length < 6 && <h1 className='text-4xl font-bold'>촬영중...</h1>}
@@ -62,7 +70,7 @@ export const DuringShot = () => {
       {photos.length >= 6 && (
         <button
           className='rounded bg-gray-700 px-8 py-4 text-2xl font-bold text-white transition hover:scale-105 hover:bg-gray-800'
-          onClick={() => navigate('/after-shot', { state: { photos } })}
+          onClick={handleEditClick}
         >
           편집하러 가기
         </button>

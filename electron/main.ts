@@ -38,6 +38,9 @@ function createWindow() {
   }
 }
 
+// LiveView 창 참조 저장 변수 추가
+let liveViewWin: BrowserWindow | null = null;
+
 // 카메라 창 생성 함수
 function createLiveWindow() {
   const cameraWin = new BrowserWindow({
@@ -72,6 +75,9 @@ function createLiveWindow() {
 
   cameraWin.loadURL(url);
 
+  // LiveView 창 참조 저장
+  liveViewWin = cameraWin;
+
   // LiveView에서 캡처한 이미지를 메인 윈도우로 전달
   ipcMain.on('image-captured', (_, imageUrl) => {
     if (win && !win.isDestroyed()) {
@@ -80,6 +86,16 @@ function createLiveWindow() {
   });
 }
 
+// LiveView 새로고침 이벤트 처리
+ipcMain.on('refresh-live-view', () => {
+  if (liveViewWin && !liveViewWin.isDestroyed()) {
+    // 창 새로고침
+    liveViewWin.reload();
+    // 또는 LiveView 창을 닫고 다시 열기
+    // liveViewWin.close();
+    // setTimeout(createLiveWindow, 500);
+  }
+});
 // IPC 이벤트 처리
 ipcMain.on('open-camera-window', () => {
   createLiveWindow();

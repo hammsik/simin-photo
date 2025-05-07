@@ -26,6 +26,7 @@ function createWindow() {
     win.loadFile(path.join(RENDERER_DIST, "index.html"));
   }
 }
+let liveViewWin = null;
 function createLiveWindow() {
   const cameraWin = new BrowserWindow({
     width: 1024,
@@ -52,12 +53,18 @@ function createLiveWindow() {
   );
   const url = VITE_DEV_SERVER_URL ? `${VITE_DEV_SERVER_URL}#/live` : `file://${path.join(RENDERER_DIST, "index.html")}#/camera`;
   cameraWin.loadURL(url);
+  liveViewWin = cameraWin;
   ipcMain.on("image-captured", (_, imageUrl) => {
     if (win && !win.isDestroyed()) {
       win.webContents.send("image-captured", imageUrl);
     }
   });
 }
+ipcMain.on("refresh-live-view", () => {
+  if (liveViewWin && !liveViewWin.isDestroyed()) {
+    liveViewWin.reload();
+  }
+});
 ipcMain.on("open-camera-window", () => {
   createLiveWindow();
 });

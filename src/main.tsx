@@ -7,6 +7,7 @@ import { AfterShot } from './page/AfterShot.tsx';
 import { Intro } from './page/Intro.tsx';
 import { Layout } from './components/Layout.tsx';
 import { DuringShot } from './page/DuringShot.tsx';
+import { Complete } from './page/Complete.tsx';
 
 ReactDOM.createRoot(document.getElementById('root')!).render(
   <React.StrictMode>
@@ -16,6 +17,7 @@ ReactDOM.createRoot(document.getElementById('root')!).render(
           <Route path='/' element={<Intro />} />
           <Route path='/during-shot' element={<DuringShot />} />
           <Route path='/after-shot' element={<AfterShot />} />
+          <Route path='/complete' element={<Complete />} />
         </Route>
         <Route path='/live' element={<LiveView />} />
       </Routes>
