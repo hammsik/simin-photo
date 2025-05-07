@@ -1,10 +1,14 @@
 import { useEffect, useRef, useState } from 'react';
 import { motion } from 'motion/react';
+import { useNavigate } from 'react-router-dom';
 
 export const DuringShot = () => {
   const [photos, setPhotos] = useState<string[]>([]);
+
   // 리스너가 이미 등록되었는지 추적하는 ref
   const listenerRegisteredRef = useRef(false);
+
+  const navigate = useNavigate();
 
   useEffect(() => {
     console.log('이미지 수신 리스너 등록 시도');
@@ -37,7 +41,7 @@ export const DuringShot = () => {
 
   return (
     <div className='flex size-full flex-col items-center justify-center gap-20'>
-      <h1 className='text-4xl font-bold'>촬영중...</h1>
+      {photos.length < 6 && <h1 className='text-4xl font-bold'>촬영중...</h1>}
       <div className='grid w-4/5 grid-cols-3 gap-2'>
         {photos.map((photo, index) => (
           <motion.div
@@ -55,6 +59,14 @@ export const DuringShot = () => {
           </motion.div>
         ))}
       </div>
+      {photos.length >= 6 && (
+        <button
+          className='rounded bg-gray-700 px-8 py-4 text-2xl font-bold text-white transition hover:scale-105 hover:bg-gray-800'
+          onClick={() => navigate('/after-shot', { state: { photos } })}
+        >
+          편집하러 가기
+        </button>
+      )}
     </div>
   );
 };

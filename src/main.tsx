@@ -3,7 +3,7 @@ import ReactDOM from 'react-dom/client';
 import { HashRouter as Router, Routes, Route } from 'react-router-dom';
 import { LiveView } from './page/LiveView.tsx';
 import './base.css';
-import { Shot } from './page/Shot.tsx';
+import { AfterShot } from './page/AfterShot.tsx';
 import { Intro } from './page/Intro.tsx';
 import { Layout } from './components/Layout.tsx';
 import { DuringShot } from './page/DuringShot.tsx';
@@ -15,7 +15,7 @@ ReactDOM.createRoot(document.getElementById('root')!).render(
         <Route element={<Layout />}>
           <Route path='/' element={<Intro />} />
           <Route path='/during-shot' element={<DuringShot />} />
-          <Route path='/shot' element={<Shot />} />
+          <Route path='/after-shot' element={<AfterShot />} />
         </Route>
         <Route path='/live' element={<LiveView />} />
       </Routes>
