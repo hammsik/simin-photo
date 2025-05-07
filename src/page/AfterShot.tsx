@@ -43,7 +43,7 @@ export const AfterShot = () => {
         page-break-before: avoid;
       }
       .full-page-image {
-        width: 100%;
+        width: 50%;
         height: 100%;
         position: relative;
         max-width: 100mm; 
@@ -56,21 +56,6 @@ export const AfterShot = () => {
       }
     }`,
   });
-
-  const printPhoto = () => {
-    // 선택된 이미지가 없으면 인쇄 불가
-    if (selectedPhotos.filter((e) => e !== null).length !== 4) {
-      alert('인쇄할 사진을 4장 선택해주세요.');
-      return;
-    }
-
-    if (!photoRef) {
-      alert('인쇄할 요소를 찾을 수 없습니다.');
-      return;
-    }
-  };
-
-  console.log(window.screen.height);
 
   return (
     <div className='relative flex size-full items-center justify-between'>
