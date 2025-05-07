@@ -2,6 +2,7 @@ import { motion } from 'motion/react';
 import { useRef, useState } from 'react';
 import { useLocation } from 'react-router-dom';
 import { PhotoFrame } from '../components/PhotoFrame';
+import { useReactToPrint } from 'react-to-print';
 
 const customFrameUrls = ['/frames/custom-1.png', '/frames/custom-2.png'];
 const solidFrameUrls = [
@@ -19,7 +20,42 @@ export const AfterShot = () => {
   );
   const [selectedFrame, setSelectedFrame] =
     useState<string>('/frames/black.png');
+
   const photoRef = useRef<HTMLDivElement>(null);
+  const reactToPrintFn = useReactToPrint({
+    contentRef: photoRef,
+    pageStyle: `@page {
+      size: 100mm 148mm; /* A4 용지 크기 설정 */
+      margin: 0;
+    }
+    @media print {
+      html, body {
+        width: 100mm;
+        height: 148mm;
+        margin: 0;
+        padding: 0;
+      }
+      .print-container {
+        width: 100mm;
+        height: 148mm;
+        display: flex;
+        page-break-after: avoid;
+        page-break-before: avoid;
+      }
+      .full-page-image {
+        width: 100%;
+        height: 100%;
+        position: relative;
+        max-width: 100mm; 
+        max-height: 148mm;
+      }
+      img {
+        max-width: 100%;
+        max-height: 100%;
+        object-fit: contain;
+      }
+    }`,
+  });
 
   const printPhoto = () => {
     // 선택된 이미지가 없으면 인쇄 불가
@@ -117,7 +153,7 @@ export const AfterShot = () => {
                 'cursor-not-allowed bg-gray-300'
               : 'bg-blue-600 hover:bg-blue-700'
             } text-white`}
-            onClick={printPhoto}
+            onClick={reactToPrintFn}
             disabled={selectedPhotos.length === 0}
           >
             <svg

@@ -3,8 +3,8 @@ export const cropImage = (imageUrl: string): Promise<string> => {
   const cropConfig = {
     x: 0, // 이미지 왼쪽에서 시작 위치 (픽셀)
     y: 65, // 이미지 상단에서 시작 위치 (픽셀)
-    height: 1000, // 크롭할 높이 (픽셀)
-    width: (1000 * 3) / 2, // 크롭할 너비 (픽셀)
+    height: 1022, // 크롭할 높이 (픽셀)
+    width: (1022 * 3) / 2, // 크롭할 너비 (픽셀)
   };
 
   return new Promise((resolve, reject) => {

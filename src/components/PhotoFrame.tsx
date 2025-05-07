@@ -13,28 +13,33 @@ export const PhotoFrame = forwardRef(
     ref: ForwardedRef<HTMLDivElement>,
   ) => {
     return (
-      <div className='relative flex size-full flex-col' ref={ref}>
-        <img
-          src={selectedFrame}
-          className='pointer-events-none z-20 h-[900px] object-contain'
-        />
-        {imageUrls.length > 0 &&
-          imageUrls.map((url, index) =>
-            url ?
-              <img
-                key={index}
-                src={url}
-                // 중간에 오도록
-                className={`absolute left-1/2 z-10 h-[161px] -translate-x-1/2 transition hover:opacity-50`}
-                style={{ top: `${index * 177 + 31}px` }}
-                onClick={() =>
-                  setImageUrls((prev) =>
-                    prev.map((item, i) => (i === index ? null : item)),
-                  )
-                } // 클릭 시 삭제
-              />
-            : <div></div>,
-          )}
+      <div className='print-container' ref={ref}>
+        <div className='full-page-image relative flex size-full flex-col'>
+          <img
+            src={selectedFrame}
+            className='pointer-events-none z-20 h-[900px] object-contain'
+          />
+          {imageUrls.length > 0 &&
+            imageUrls.map((url, index) =>
+              url ?
+                <img
+                  key={index}
+                  src={url}
+                  // 중간에 오도록
+                  className={`absolute left-1/2 z-10 h-[17.74%] -translate-x-1/2 transition hover:opacity-50`}
+                  // 높이의 일정 비율 만큼 띄우기
+                  style={{
+                    top: `${index * 19.7 + 3.4}%`,
+                  }}
+                  onClick={() =>
+                    setImageUrls((prev) =>
+                      prev.map((item, i) => (i === index ? null : item)),
+                    )
+                  } // 클릭 시 삭제
+                />
+              : null,
+            )}
+        </div>
       </div>
     );
   },

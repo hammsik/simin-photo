@@ -116,7 +116,7 @@ export const LiveView = () => {
                 </>
               )}
             </div>
-            <div className='bg-primary flex h-full w-[202px] flex-col items-center px-2 py-10'>
+            <div className='bg-primary flex h-full w-[225px] flex-col items-center px-2 py-10'>
               <div className='flex size-full flex-col'>
                 {photoUrls.map((photoUrl, index) => (
                   <motion.div
