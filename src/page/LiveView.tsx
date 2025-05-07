@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useCallback } from 'react';
 import { cropImage } from '../utils/imageUtils';
 import { motion } from 'motion/react';
 
@@ -8,7 +8,11 @@ export const LiveView = () => {
   const [shutterReleaseCnt, setShutterReleaseCnt] = useState(0);
   const [isFinished, setIsFinished] = useState(false);
 
-  const captureScreen = async () => {
+  // captureScreen 함수를 useCallback으로 메모이제이션
+  const captureScreen = useCallback(async () => {
+    // 이미 촬영 중이거나 6장 이상 촬영했으면 무시
+    if (isCapturing || photoUrls.length >= 6) return;
+
     setIsCapturing(true);
 
     try {
@@ -32,8 +36,28 @@ export const LiveView = () => {
     } finally {
       setIsCapturing(false);
     }
-  };
+  }, [isCapturing, photoUrls.length]);
 
+  // 스페이스바 이벤트 리스너 추가
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      // 스페이스바(keyCode: 32) 누르면 촬영
+      if (e.code === 'Space' || e.keyCode === 32) {
+        e.preventDefault(); // 기본 스크롤 동작 방지
+        captureScreen();
+      }
+    };
+
+    // 이벤트 리스너 등록
+    window.addEventListener('keydown', handleKeyDown);
+
+    // 컴포넌트 언마운트 시 이벤트 리스너 제거
+    return () => {
+      window.removeEventListener('keydown', handleKeyDown);
+    };
+  }, [captureScreen]);
+
+  // 6장 촬영 완료 시 완료 상태로 전환
   useEffect(() => {
     if (photoUrls.length >= 6) {
       setTimeout(() => setIsFinished(true), 500);
