@@ -23,12 +23,16 @@ export const AfterShot = () => {
   const [selectedFrame, setSelectedFrame] =
     useState<string>('/frames/black.png');
   const [saving, setSaving] = useState(false);
+  const [fileName, setFileName] = useState<string>('');
+  // 상단에 Dialog 관련 상태 추가
+  const [showDialog, setShowDialog] = useState<'pdf' | 'png' | null>(null);
 
   const photoRef = useRef<HTMLDivElement>(null);
   const pngExportRef = useRef<HTMLDivElement>(null);
 
   const reactToPrintFn = useReactToPrint({
     contentRef: photoRef,
+    documentTitle: `시민포토_${fileName}`,
     pageStyle: `@page {
       size: 100mm 148mm; /* A4 용지 크기 설정 */
       margin: 0;
@@ -81,7 +85,7 @@ export const AfterShot = () => {
       // 다운로드 링크 생성
       const link = document.createElement('a');
       link.href = imageData;
-      link.download = `시민포토_${new Date().toISOString().slice(0, 10)}.png`;
+      link.download = `시민포토_${fileName}.png`;
       document.body.appendChild(link);
       link.click();
       document.body.removeChild(link);
@@ -93,14 +97,31 @@ export const AfterShot = () => {
     }
   };
 
-  const handlePhotoPrint = () => {
+  const handlePhotoPrint = (type: 'pdf' | 'png') => {
     if (selectedPhotos.filter((p) => p !== null).length < 4) {
-      alert('4장을 선택해야 인쇄할 수 있습니다.');
+      alert('먼저 사진 4장을 선택해주세요.');
       return;
     }
 
-    reactToPrintFn();
-    saveAsPNG();
+    setShowDialog(type);
+  };
+
+  // 파일명 입력 후 처리하는 함수 추가
+  const handleFileNameSubmit = (type: 'pdf' | 'png') => {
+    // 파일명이 비어있으면 현재 날짜로 설정
+    if (!fileName) {
+      alert('파일명을 입력하세요.');
+      return;
+    }
+
+    // 다이얼로그 닫기
+    setShowDialog(null);
+
+    if (type === 'pdf') {
+      reactToPrintFn();
+    } else if (type === 'png') {
+      saveAsPNG();
+    }
   };
 
   return (
@@ -198,7 +219,7 @@ export const AfterShot = () => {
           />
         </div>
 
-        <div ref={pngExportRef} className='fixed right-2000 flex'>
+        <div ref={pngExportRef} className='fixed -right-300 flex'>
           <PhotoFrame
             selectedFrame={selectedFrame}
             imageUrls={selectedPhotos}
@@ -210,15 +231,30 @@ export const AfterShot = () => {
             setImageUrls={setSelectedPhotos}
           />
         </div>
+
         <div className='flex gap-4'>
           <button
             className={`flex cursor-pointer items-center justify-center rounded p-4 ${
               selectedPhotos.length === 0 ?
                 'cursor-not-allowed bg-gray-300'
-              : 'bg-blue-600 hover:bg-blue-700'
+              : 'bg-rose-400 hover:bg-rose-500'
             } text-white`}
-            onClick={handlePhotoPrint}
+            onClick={() => handlePhotoPrint('pdf')}
           >
+            <svg
+              xmlns='http://www.w3.org/2000/svg'
+              className='mr-2 h-5 w-5'
+              fill='none'
+              viewBox='0 0 24 24'
+              stroke='currentColor'
+            >
+              <path
+                strokeLinecap='round'
+                strokeLinejoin='round'
+                strokeWidth={2}
+                d='M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4'
+              />
+            </svg>
             <svg
               xmlns='http://www.w3.org/2000/svg'
               className='mr-2 h-6 w-6'
@@ -233,8 +269,33 @@ export const AfterShot = () => {
                 d='M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z'
               />
             </svg>
-            인쇄하기
+            PDF
           </button>
+          <button
+            className={`flex cursor-pointer items-center justify-center rounded p-4 ${
+              selectedPhotos.length === 0 ?
+                'cursor-not-allowed bg-gray-300'
+              : 'bg-blue-600 hover:bg-blue-700'
+            } text-white`}
+            onClick={() => handlePhotoPrint('png')}
+          >
+            <svg
+              xmlns='http://www.w3.org/2000/svg'
+              className='mr-2 h-5 w-5'
+              fill='none'
+              viewBox='0 0 24 24'
+              stroke='currentColor'
+            >
+              <path
+                strokeLinecap='round'
+                strokeLinejoin='round'
+                strokeWidth={2}
+                d='M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4'
+              />
+            </svg>
+            PNG
+          </button>
+
           <button
             className={`flex cursor-pointer items-center justify-center rounded p-4 ${
               selectedPhotos.length === 0 ?
@@ -246,6 +307,54 @@ export const AfterShot = () => {
             완료
           </button>
         </div>
+        {/* 파일명 입력 다이얼로그 */}
+        {showDialog && (
+          <motion.div
+            className='fixed inset-0 z-50 flex items-center justify-center bg-black/30'
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+          >
+            <div className='w-96 rounded-lg bg-white p-6 shadow-lg'>
+              <h3 className='mb-4 text-xl font-bold'>파일 이름 입력</h3>
+              {/* esc 누르면 모달제거 */}
+              <form
+                onSubmit={(e) => {
+                  e.preventDefault();
+                  handleFileNameSubmit(showDialog);
+                }}
+                onKeyDown={(e) => {
+                  if (e.key === 'Escape') {
+                    setShowDialog(null);
+                  }
+                }}
+              >
+                <input
+                  type='text'
+                  className='mb-4 w-full rounded border border-gray-300 p-2'
+                  placeholder='파일명을 입력하세요'
+                  value={fileName}
+                  onChange={(e) => setFileName(e.target.value)}
+                  autoFocus
+                />
+                <div className='flex justify-end gap-2'>
+                  <button
+                    type='button'
+                    className='rounded bg-gray-300 px-4 py-2 hover:bg-gray-400'
+                    onClick={() => setShowDialog(null)}
+                  >
+                    취소
+                  </button>
+                  <button
+                    type='submit'
+                    className='rounded bg-blue-600 px-4 py-2 text-white hover:bg-blue-700'
+                  >
+                    확인
+                  </button>
+                </div>
+              </form>
+            </div>
+          </motion.div>
+        )}
       </div>
     </div>
   );
