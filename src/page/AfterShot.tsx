@@ -3,6 +3,7 @@ import { useRef, useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { PhotoFrame } from '../components/PhotoFrame';
 import { useReactToPrint } from 'react-to-print';
+import html2canvas from 'html2canvas';
 
 const customFrameUrls = ['/frames/custom-1.png', '/frames/custom-2.png'];
 const solidFrameUrls = [
@@ -14,7 +15,6 @@ const solidFrameUrls = [
 
 export const AfterShot = () => {
   const navigate = useNavigate();
-
   const photos: string[] = useLocation().state?.photos; // 촬영한 사진들
 
   const [selectedPhotos, setSelectedPhotos] = useState<Array<string | null>>(
@@ -22,8 +22,11 @@ export const AfterShot = () => {
   );
   const [selectedFrame, setSelectedFrame] =
     useState<string>('/frames/black.png');
+  const [saving, setSaving] = useState(false);
 
   const photoRef = useRef<HTMLDivElement>(null);
+  const pngExportRef = useRef<HTMLDivElement>(null);
+
   const reactToPrintFn = useReactToPrint({
     contentRef: photoRef,
     pageStyle: `@page {
@@ -58,6 +61,47 @@ export const AfterShot = () => {
       }
     }`,
   });
+
+  const saveAsPNG = async () => {
+    if (!pngExportRef.current || saving) return;
+
+    try {
+      setSaving(true);
+
+      // html2canvas 설정
+      const canvas = await html2canvas(pngExportRef.current, {
+        scale: 5,
+        useCORS: true, // 외부 이미지 허용
+        allowTaint: true,
+      });
+
+      // 이미지 데이터 생성
+      const imageData = canvas.toDataURL('image/png');
+
+      // 다운로드 링크 생성
+      const link = document.createElement('a');
+      link.href = imageData;
+      link.download = `시민포토_${new Date().toISOString().slice(0, 10)}.png`;
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+    } catch (error) {
+      console.error('이미지 저장 에러:', error);
+      alert('이미지 저장 중 오류가 발생했습니다.');
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  const handlePhotoPrint = () => {
+    if (selectedPhotos.filter((p) => p !== null).length < 4) {
+      alert('4장을 선택해야 인쇄할 수 있습니다.');
+      return;
+    }
+
+    reactToPrintFn();
+    saveAsPNG();
+  };
 
   return (
     <div className='relative flex size-full items-center justify-between'>
@@ -127,12 +171,45 @@ export const AfterShot = () => {
         </div>
       </div>
       <div className='flex h-full flex-col items-center justify-center gap-6 p-6 pr-20'>
-        <PhotoFrame
+        {/* 화면에 보이는 프레임 */}
+        <div className='print-container'>
+          <PhotoFrame
+            selectedFrame={selectedFrame}
+            imageUrls={selectedPhotos}
+            setImageUrls={setSelectedPhotos}
+          />
+        </div>
+
+        {/* 인쇄용 프레임 (화면에는 숨기고 인쇄 시에만 표시) */}
+        <div
           ref={photoRef}
-          imageUrls={selectedPhotos}
-          selectedFrame={selectedFrame}
-          setImageUrls={setSelectedPhotos}
-        />
+          className='print-container hidden print:block'
+          style={{ pageBreakAfter: 'always', pageBreakInside: 'avoid' }}
+        >
+          <PhotoFrame
+            selectedFrame={selectedFrame}
+            imageUrls={selectedPhotos}
+            setImageUrls={setSelectedPhotos}
+          />
+          <PhotoFrame
+            selectedFrame={selectedFrame}
+            imageUrls={selectedPhotos}
+            setImageUrls={setSelectedPhotos}
+          />
+        </div>
+
+        <div ref={pngExportRef} className='fixed right-2000 flex'>
+          <PhotoFrame
+            selectedFrame={selectedFrame}
+            imageUrls={selectedPhotos}
+            setImageUrls={setSelectedPhotos}
+          />
+          <PhotoFrame
+            selectedFrame={selectedFrame}
+            imageUrls={selectedPhotos}
+            setImageUrls={setSelectedPhotos}
+          />
+        </div>
         <div className='flex gap-4'>
           <button
             className={`flex cursor-pointer items-center justify-center rounded p-4 ${
@@ -140,8 +217,7 @@ export const AfterShot = () => {
                 'cursor-not-allowed bg-gray-300'
               : 'bg-blue-600 hover:bg-blue-700'
             } text-white`}
-            onClick={reactToPrintFn}
-            disabled={selectedPhotos.length === 0}
+            onClick={handlePhotoPrint}
           >
             <svg
               xmlns='http://www.w3.org/2000/svg'
