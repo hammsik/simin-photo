@@ -41,13 +41,11 @@ function createLiveWindow() {
       preload: path.join(__dirname, "preload.mjs"),
       // 화면 캡쳐를 위해 필요한 설정
       nodeIntegration: true,
-      contextIsolation: true,
-      enableRemoteModule: true
-      // remote 모듈 활성화
+      contextIsolation: true
     }
   });
   cameraWin.webContents.session.setPermissionRequestHandler(
-    (webContents, permission, callback) => {
+    (_webContents, permission, callback) => {
       if (permission === "media") {
         return callback(true);
       }

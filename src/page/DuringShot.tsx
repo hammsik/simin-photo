@@ -4,7 +4,6 @@ import { useLocation, useNavigate } from 'react-router-dom';
 
 // TODO: 3 2 1 카운트다운 애니메이션 추가
 // TODO: DuringShot에서 마우스 클릭 감지하도록
-// TODO: 관리자모드 - 지금까지 찍었던 프레임들 다시 볼 수 있는 뷰
 
 export const DuringShot = () => {
   const [photos, setPhotos] = useState<string[]>([]);
