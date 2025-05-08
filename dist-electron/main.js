@@ -28,6 +28,9 @@ function createWindow() {
 }
 let liveViewWin = null;
 function createLiveWindow() {
+  if (liveViewWin && !liveViewWin.isDestroyed()) {
+    return;
+  }
   const cameraWin = new BrowserWindow({
     width: 1024,
     height: 768,

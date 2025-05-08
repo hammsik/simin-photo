@@ -43,6 +43,10 @@ let liveViewWin: BrowserWindow | null = null;
 
 // 카메라 창 생성 함수
 function createLiveWindow() {
+  if (liveViewWin && !liveViewWin.isDestroyed()) {
+    return;
+  }
+
   const cameraWin = new BrowserWindow({
     width: 1024,
     height: 768,

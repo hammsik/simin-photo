@@ -1,13 +1,16 @@
 import { motion } from 'motion/react';
+import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { CustomDialog } from '../components/CustomDialog';
 
 export const Intro = () => {
+  const navigate = useNavigate();
+  const [isOpenDialog, setIsOpenDialog] = useState(false);
+
   const openCameraWindow = () => {
     // Electron의 ipcRenderer를 통해 메인 프로세스에 새 창 요청
     window.ipcRenderer.send('open-camera-window');
   };
-
-  const navigate = useNavigate();
 
   return (
     <div className='flex size-full flex-col items-center justify-center'>
@@ -21,14 +24,20 @@ export const Intro = () => {
         <motion.button
           whileHover={{ scale: 1.2 }}
           className='cursor-pointer'
-          onClick={() => {
-            navigate('/during-shot');
-            openCameraWindow();
-          }}
+          onClick={() => setIsOpenDialog(true)}
         >
           <img src='/camera.png' alt='Camera' className='h-24 w-24' />
         </motion.button>
       </div>
+      {isOpenDialog && (
+        <CustomDialog
+          submit={(photoName: string) => {
+            navigate('/during-shot', { state: { photoName } });
+            openCameraWindow();
+          }}
+          cancel={() => setIsOpenDialog(false)}
+        />
+      )}
     </div>
   );
 };

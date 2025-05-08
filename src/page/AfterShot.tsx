@@ -16,6 +16,7 @@ const solidFrameUrls = [
 export const AfterShot = () => {
   const navigate = useNavigate();
   const photos: string[] = useLocation().state?.photos; // 촬영한 사진들
+  const photoName: string = useLocation().state?.photoName; // 파일 이름
 
   const [selectedPhotos, setSelectedPhotos] = useState<Array<string | null>>(
     Array(4).fill(null),
@@ -23,16 +24,13 @@ export const AfterShot = () => {
   const [selectedFrame, setSelectedFrame] =
     useState<string>('/frames/black.png');
   const [saving, setSaving] = useState(false);
-  const [fileName, setFileName] = useState<string>('');
-  // 상단에 Dialog 관련 상태 추가
-  const [showDialog, setShowDialog] = useState<'pdf' | 'png' | null>(null);
 
   const photoRef = useRef<HTMLDivElement>(null);
   const pngExportRef = useRef<HTMLDivElement>(null);
 
   const reactToPrintFn = useReactToPrint({
     contentRef: photoRef,
-    documentTitle: `시민포토_${fileName}`,
+    documentTitle: `시민포토_${photoName ? photoName : '없음'}`,
     pageStyle: `@page {
       size: 100mm 148mm; /* A4 용지 크기 설정 */
       margin: 0;
@@ -85,7 +83,7 @@ export const AfterShot = () => {
       // 다운로드 링크 생성
       const link = document.createElement('a');
       link.href = imageData;
-      link.download = `시민포토_${fileName}.png`;
+      link.download = `시민포토_${photoName ? photoName : '없음'}.png`;
       document.body.appendChild(link);
       link.click();
       document.body.removeChild(link);
@@ -103,23 +101,9 @@ export const AfterShot = () => {
       return;
     }
 
-    setShowDialog(type);
-  };
-
-  // 파일명 입력 후 처리하는 함수 추가
-  const handleFileNameSubmit = (type: 'pdf' | 'png') => {
-    // 파일명이 비어있으면 현재 날짜로 설정
-    if (!fileName) {
-      alert('파일명을 입력하세요.');
-      return;
-    }
-
-    // 다이얼로그 닫기
-    setShowDialog(null);
-
     if (type === 'pdf') {
       reactToPrintFn();
-    } else if (type === 'png') {
+    } else {
       saveAsPNG();
     }
   };
@@ -302,59 +286,11 @@ export const AfterShot = () => {
                 'cursor-not-allowed bg-gray-300'
               : 'bg-green-600 hover:bg-green-700'
             } text-white`}
-            onClick={() => navigate('/complete')}
+            onClick={() => navigate('/')}
           >
-            완료
+            종료
           </button>
         </div>
-        {/* 파일명 입력 다이얼로그 */}
-        {showDialog && (
-          <motion.div
-            className='fixed inset-0 z-50 flex items-center justify-center bg-black/30'
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-          >
-            <div className='w-96 rounded-lg bg-white p-6 shadow-lg'>
-              <h3 className='mb-4 text-xl font-bold'>파일 이름 입력</h3>
-              {/* esc 누르면 모달제거 */}
-              <form
-                onSubmit={(e) => {
-                  e.preventDefault();
-                  handleFileNameSubmit(showDialog);
-                }}
-                onKeyDown={(e) => {
-                  if (e.key === 'Escape') {
-                    setShowDialog(null);
-                  }
-                }}
-              >
-                <input
-                  type='text'
-                  className='mb-4 w-full rounded border border-gray-300 p-2'
-                  placeholder='파일명을 입력하세요'
-                  value={fileName}
-                  onChange={(e) => setFileName(e.target.value)}
-                  autoFocus
-                />
-                <div className='flex justify-end gap-2'>
-                  <button
-                    type='button'
-                    className='rounded bg-gray-300 px-4 py-2 hover:bg-gray-400'
-                    onClick={() => setShowDialog(null)}
-                  >
-                    취소
-                  </button>
-                  <button
-                    type='submit'
-                    className='rounded bg-blue-600 px-4 py-2 text-white hover:bg-blue-700'
-                  >
-                    확인
-                  </button>
-                </div>
-              </form>
-            </div>
-          </motion.div>
-        )}
       </div>
     </div>
   );
