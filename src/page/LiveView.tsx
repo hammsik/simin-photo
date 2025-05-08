@@ -42,7 +42,7 @@ export const LiveView = () => {
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
       // 스페이스바(keyCode: 32) 누르면 촬영
-      if (e.code === 'Space' || e.keyCode === 32) {
+      if (e.code === 'ArrowLeft') {
         e.preventDefault(); // 기본 스크롤 동작 방지
         captureScreen();
       }
@@ -140,12 +140,12 @@ export const LiveView = () => {
                 </>
               )}
             </div>
-            <div className='bg-primary flex h-full w-[225px] flex-col items-center px-2 py-10'>
-              <div className='flex size-full flex-col'>
+            <div className='bg-primary flex h-full w-[516px] flex-col items-center px-2 py-10'>
+              <div className='flex size-full flex-col items-center justify-center'>
                 {photoUrls.map((photoUrl, index) => (
                   <motion.div
                     key={index}
-                    className={`my-2 flex aspect-[3/2] w-full items-center justify-center`}
+                    className={`my-2 flex aspect-[3/2] w-3/5 items-center justify-center`}
                     initial={{ opacity: 0, y: 30 }}
                     animate={{ opacity: 1, y: 0 }}
                   >

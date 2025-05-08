@@ -2,6 +2,13 @@ import { useEffect, useRef, useState } from 'react';
 import { motion } from 'motion/react';
 import { useNavigate } from 'react-router-dom';
 
+// TODO: 3 2 1 카운트다운 애니메이션 추가
+// TODO: 촬영 중 중복 클릭 방지
+// TODO: 완료 누르면 첫 페이지로 이동 (새로운 창은 열지 않기)
+// TODO: DuringShot에서 마우스 클릭 감지하도록
+// TODO: 인쇄버튼 누르면 파일 저장 되도록 (안되면 인쇄창에서라도 png옵션 보이도록)
+// TODO: 관리자모드 - 지금까지 찍었던 프레임들 다시 볼 수 있는 뷰
+
 export const DuringShot = () => {
   const [photos, setPhotos] = useState<string[]>([]);
 
