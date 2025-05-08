@@ -32,6 +32,10 @@ export const Intro = () => {
       {isOpenDialog && (
         <CustomDialog
           submit={(photoName: string) => {
+            if (photoName.length === 0) {
+              alert('사진 제목을 입력해주세요.');
+              return;
+            }
             navigate('/during-shot', { state: { photoName } });
             openCameraWindow();
           }}

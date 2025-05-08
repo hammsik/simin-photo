@@ -24,6 +24,7 @@ export const AfterShot = () => {
   const [selectedFrame, setSelectedFrame] =
     useState<string>('/frames/black.png');
   const [saving, setSaving] = useState(false);
+  const [clickedCnt, setClickedCnt] = useState(0);
 
   const photoRef = useRef<HTMLDivElement>(null);
   const pngExportRef = useRef<HTMLDivElement>(null);
@@ -100,6 +101,8 @@ export const AfterShot = () => {
       alert('먼저 사진 4장을 선택해주세요.');
       return;
     }
+
+    setClickedCnt((prev) => prev + 1);
 
     if (type === 'pdf') {
       reactToPrintFn();
@@ -281,11 +284,8 @@ export const AfterShot = () => {
           </button>
 
           <button
-            className={`flex cursor-pointer items-center justify-center rounded p-4 ${
-              selectedPhotos.length === 0 ?
-                'cursor-not-allowed bg-gray-300'
-              : 'bg-green-600 hover:bg-green-700'
-            } text-white`}
+            className={`flex cursor-pointer items-center justify-center rounded bg-green-600 p-4 text-white hover:bg-green-700 disabled:cursor-not-allowed disabled:bg-gray-300`}
+            disabled={clickedCnt < 3}
             onClick={() => navigate('/')}
           >
             종료
