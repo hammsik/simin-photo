@@ -149,7 +149,7 @@ export const LiveView = () => {
               )}
               {isCapturing && (
                 <motion.h2
-                  className='absolute top-1/2 left-1/2 z-10 -translate-x-1/2 -translate-y-1/2 text-[200px] font-bold text-white'
+                  className='absolute top-1/2 left-1/2 z-10 -translate-x-1/2 -translate-y-1/2 text-[200px] font-bold text-white text-shadow-lg'
                   initial={{ opacity: 0, rotate: -240 }}
                   animate={{ opacity: 1, rotate: 0 }}
                   transition={{ type: 'spring', stiffness: 300, damping: 20 }}

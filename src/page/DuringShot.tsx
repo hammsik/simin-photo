@@ -61,8 +61,16 @@ export const DuringShot = () => {
 
   return (
     <div className='flex size-full flex-col items-center justify-center gap-20'>
-      {photos.length < 6 && <h1 className='text-4xl font-bold'>촬영중...</h1>}
-      <div className='grid w-4/5 grid-cols-3 gap-2'>
+      {photos.length < 6 && (
+        <motion.h1
+          className='text-4xl font-bold'
+          animate={{ opacity: [0.2, 1, 0.2] }}
+          transition={{ repeat: Infinity, duration: 1.4, ease: 'linear' }}
+        >
+          촬영중...
+        </motion.h1>
+      )}
+      <div className='grid w-4/5 grid-cols-3 gap-12'>
         {photos.map((photo, index) => (
           <motion.div
             key={index}
