@@ -61,6 +61,11 @@ function createLiveWindow() {
       win.webContents.send("main-image-received", imageUrl);
     }
   });
+  ipcMain.on("shutter-release", () => {
+    if (liveViewWin && !liveViewWin.isDestroyed()) {
+      liveViewWin.webContents.send("live-shutter-release");
+    }
+  });
 }
 ipcMain.on("refresh-live-view", () => {
   if (liveViewWin && !liveViewWin.isDestroyed()) {

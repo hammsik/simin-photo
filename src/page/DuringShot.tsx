@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { motion } from 'motion/react';
 import { useLocation, useNavigate } from 'react-router-dom';
 
@@ -30,6 +30,26 @@ export const DuringShot = () => {
       window.ipcRenderer.removeAllListeners('main-image-received');
     };
   }, []); // 의존성 배열 비움
+
+  // 사진 촬영 함수
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      // 스페이스바(keyCode: 32) 누르면 촬영
+      if (e.code === 'ArrowLeft') {
+        e.preventDefault(); // 기본 스크롤 동작 방지
+        window.ipcRenderer.send('shutter-release');
+        console.log('눌렸다');
+      }
+    };
+
+    // 이벤트 리스너 등록
+    window.addEventListener('keydown', handleKeyDown);
+
+    // 컴포넌트 언마운트 시 이벤트 리스너 제거
+    return () => {
+      window.removeEventListener('keydown', handleKeyDown);
+    };
+  }, []);
 
   // 편집하기 버튼 클릭 핸들러
   const handleEditClick = () => {

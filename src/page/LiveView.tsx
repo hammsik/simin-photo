@@ -7,20 +7,18 @@ export const LiveView = () => {
   const [photoUrls, setPhotoUrls] = useState<string[]>([]);
   const [shutterReleaseCnt, setShutterReleaseCnt] = useState(0);
   const [isFinished, setIsFinished] = useState(false);
+  const [countdown, setCountdown] = useState<number>(3);
 
   // captureScreen 함수를 useCallback으로 메모이제이션
   const captureScreen = useCallback(async () => {
-    // 이미 촬영 중이거나 6장 이상 촬영했으면 무시
-    if (isCapturing || photoUrls.length >= 6) return;
-
-    setIsCapturing(true);
-
+    console.log('찰칵');
     try {
       const sources = await window.ipcRenderer.captureScreen();
       setShutterReleaseCnt((prev) => prev + 1);
 
       if (sources && sources.length > 0) {
         const source = sources[0];
+        console.log(source);
         const fullScreenImageUrl = source.thumbnail.toDataURL();
         const croppedImageUrl = await cropImage(fullScreenImageUrl);
 
@@ -36,26 +34,36 @@ export const LiveView = () => {
     } finally {
       setIsCapturing(false);
     }
-  }, [isCapturing, photoUrls.length]);
+  }, []);
 
-  // 스페이스바 이벤트 리스너 추가
+  // 메인프로세스에서 shutter-release 메시지 수신 시 촬영
   useEffect(() => {
-    const handleKeyDown = (e: KeyboardEvent) => {
-      // 스페이스바(keyCode: 32) 누르면 촬영
-      if (e.code === 'ArrowLeft') {
-        e.preventDefault(); // 기본 스크롤 동작 방지
-        captureScreen();
-      }
-    };
+    window.ipcRenderer.on('live-shutter-release', () => {
+      console.log('shutter-release 수신');
 
-    // 이벤트 리스너 등록
-    window.addEventListener('keydown', handleKeyDown);
+      if (isCapturing || photoUrls.length >= 6) return;
+      setIsCapturing(true);
 
-    // 컴포넌트 언마운트 시 이벤트 리스너 제거
+      const countDown = (count: number) => {
+        if (count === 0) {
+          captureScreen();
+          setCountdown(0);
+          return;
+        }
+
+        setCountdown(count);
+        setTimeout(() => {
+          countDown(count - 1);
+        }, 1000);
+      };
+
+      countDown(3);
+    });
+
     return () => {
-      window.removeEventListener('keydown', handleKeyDown);
+      window.ipcRenderer.removeAllListeners('live-shutter-release');
     };
-  }, [captureScreen]);
+  }, [captureScreen, countdown, isCapturing, photoUrls.length]);
 
   // 6장 촬영 완료 시 완료 상태로 전환
   useEffect(() => {
@@ -124,20 +132,31 @@ export const LiveView = () => {
               {photoUrls.length > 0 && (
                 <>
                   <motion.div
-                    key={shutterReleaseCnt}
+                    key={shutterReleaseCnt + 'top'}
                     className='absolute top-0 w-full bg-black'
                     initial={{ height: 0 }}
                     animate={{ height: [0, '50%', '50%', 0] }}
                     transition={{ ease: 'linear', times: [0, 0.2, 0.8, 1] }}
                   />
                   <motion.div
-                    key={shutterReleaseCnt}
+                    key={shutterReleaseCnt + 'bottom'}
                     className='absolute bottom-0 w-full bg-black'
                     initial={{ height: 0 }}
                     animate={{ height: [0, '50%', '50%', 0] }}
                     transition={{ ease: 'linear', times: [0, 0.2, 0.8, 1] }}
                   />
                 </>
+              )}
+              {isCapturing && (
+                <motion.h2
+                  className='absolute top-1/2 left-1/2 z-10 -translate-x-1/2 -translate-y-1/2 text-[200px] font-bold text-white'
+                  initial={{ opacity: 0, rotate: -240 }}
+                  animate={{ opacity: 1, rotate: 0 }}
+                  transition={{ type: 'spring', stiffness: 300, damping: 20 }}
+                  key={countdown}
+                >
+                  {countdown > 0 && countdown}
+                </motion.h2>
               )}
             </div>
             <div className='bg-primary flex h-full w-[516px] flex-col items-center px-2 py-10'>

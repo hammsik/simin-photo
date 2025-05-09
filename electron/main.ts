@@ -88,6 +88,13 @@ function createLiveWindow() {
       win.webContents.send('main-image-received', imageUrl);
     }
   });
+
+  // DuringShot에서 shutter-release 메시지를 수신하면 LiveView로 신호
+  ipcMain.on('shutter-release', () => {
+    if (liveViewWin && !liveViewWin.isDestroyed()) {
+      liveViewWin.webContents.send('live-shutter-release');
+    }
+  });
 }
 
 // LiveView 새로고침 이벤트 처리
