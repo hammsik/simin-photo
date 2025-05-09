@@ -1,9 +1,11 @@
-import { motion } from 'motion/react';
 import { useRef, useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
-import { PhotoFrame } from '../components/PhotoFrame';
 import { useReactToPrint } from 'react-to-print';
 import html2canvas from 'html2canvas';
+import { PhotoGrid } from '../components/aftershot/PhotoGrid';
+import { FrameSelector } from '../components/aftershot/FrameSelector';
+import { ExportButtons } from '../components/aftershot/ExportButtons';
+import { PhotoPreview } from '../components/aftershot/PhotoPreview';
 
 const customFrameUrls = ['/frames/custom-1.png', '/frames/custom-2.png'];
 const solidFrameUrls = [
@@ -14,7 +16,6 @@ const solidFrameUrls = [
 ];
 
 export const AfterShot = () => {
-  const navigate = useNavigate();
   const photos: string[] = useLocation().state?.photos; // 촬영한 사진들
   const photoName: string = useLocation().state?.photoName; // 파일 이름
 
@@ -111,186 +112,38 @@ export const AfterShot = () => {
     }
   };
 
+  const selectedPhotosCount = selectedPhotos.filter((p) => p !== null).length;
+
   return (
     <div className='relative flex size-full items-center justify-between'>
       <div className='flex h-full w-2/3 flex-col gap-12 p-12'>
-        <div className='grid w-full grid-cols-3 items-center justify-center gap-10'>
-          {photos.map((photo, index) => (
-            <motion.button
-              whileHover={{ y: -10 }}
-              key={index}
-              className={`cursor-pointer drop-shadow-xl ${
-                selectedPhotos.includes(photo) && 'opacity-30'
-              }`}
-              onClick={() => {
-                if (!selectedPhotos.includes(photo)) {
-                  if (selectedPhotos.filter((p) => p !== null).length >= 4) {
-                    alert('최대 4장까지 선택할 수 있습니다.');
-                    return;
-                  }
-                  setSelectedPhotos((prev) => {
-                    const newPhotos = [...prev];
-                    for (let i = 0; i < newPhotos.length; i++) {
-                      if (newPhotos[i] === null) {
-                        newPhotos[i] = photo;
-                        break;
-                      }
-                    }
-                    return newPhotos;
-                  });
-                }
-              }}
-            >
-              <img
-                src={photo}
-                alt={`촬영한 사진 ${index + 1}`}
-                className='w-full object-cover'
-              />
-            </motion.button>
-          ))}
-        </div>
-        <div className='flex size-full gap-30'>
-          <div className='flex h-full flex-col gap-4'>
-            <h3 className='text-2xl font-bold'>커스텀 프레임</h3>
-            <div className='flex h-full gap-10'>
-              {customFrameUrls.map((url, index) => (
-                <img
-                  src={url}
-                  key={index}
-                  onClick={() => setSelectedFrame(url)}
-                  className='h-80 cursor-pointer object-contain transition hover:scale-95'
-                />
-              ))}
-            </div>
-          </div>
-          <div className='flex h-full flex-col gap-4'>
-            <h3 className='text-2xl font-bold'>단색 프레임</h3>
-            <div className='flex h-full gap-10'>
-              {solidFrameUrls.map((url, index) => (
-                <img
-                  src={url}
-                  key={index}
-                  onClick={() => setSelectedFrame(url)}
-                  className='h-80 cursor-pointer object-contain transition hover:scale-95'
-                />
-              ))}
-            </div>
-          </div>
-        </div>
+        <PhotoGrid
+          photos={photos}
+          selectedPhotos={selectedPhotos}
+          setSelectedPhotos={setSelectedPhotos}
+        />
+
+        <FrameSelector
+          customFrameUrls={customFrameUrls}
+          solidFrameUrls={solidFrameUrls}
+          setSelectedFrame={setSelectedFrame}
+        />
       </div>
+
       <div className='flex h-full flex-col items-center justify-center gap-6 p-6 pr-20'>
-        {/* 화면에 보이는 프레임 */}
-        <div className='print-container'>
-          <PhotoFrame
-            selectedFrame={selectedFrame}
-            imageUrls={selectedPhotos}
-            setImageUrls={setSelectedPhotos}
-          />
-        </div>
+        <PhotoPreview
+          selectedFrame={selectedFrame}
+          selectedPhotos={selectedPhotos}
+          setSelectedPhotos={setSelectedPhotos}
+          photoRef={photoRef}
+          pngExportRef={pngExportRef}
+        />
 
-        {/* 인쇄용 프레임 (화면에는 숨기고 인쇄 시에만 표시) */}
-        <div
-          ref={photoRef}
-          className='print-container hidden print:block'
-          style={{ pageBreakAfter: 'always', pageBreakInside: 'avoid' }}
-        >
-          <PhotoFrame
-            selectedFrame={selectedFrame}
-            imageUrls={selectedPhotos}
-            setImageUrls={setSelectedPhotos}
-          />
-          <PhotoFrame
-            selectedFrame={selectedFrame}
-            imageUrls={selectedPhotos}
-            setImageUrls={setSelectedPhotos}
-          />
-        </div>
-
-        <div ref={pngExportRef} className='fixed -right-300 flex'>
-          <PhotoFrame
-            selectedFrame={selectedFrame}
-            imageUrls={selectedPhotos}
-            setImageUrls={setSelectedPhotos}
-          />
-          <PhotoFrame
-            selectedFrame={selectedFrame}
-            imageUrls={selectedPhotos}
-            setImageUrls={setSelectedPhotos}
-          />
-        </div>
-
-        <div className='flex gap-4'>
-          <button
-            className={`flex cursor-pointer items-center justify-center rounded p-4 ${
-              selectedPhotos.length === 0 ?
-                'cursor-not-allowed bg-gray-300'
-              : 'bg-rose-400 hover:bg-rose-500'
-            } text-white`}
-            onClick={() => handlePhotoPrint('pdf')}
-          >
-            <svg
-              xmlns='http://www.w3.org/2000/svg'
-              className='mr-2 h-5 w-5'
-              fill='none'
-              viewBox='0 0 24 24'
-              stroke='currentColor'
-            >
-              <path
-                strokeLinecap='round'
-                strokeLinejoin='round'
-                strokeWidth={2}
-                d='M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4'
-              />
-            </svg>
-            <svg
-              xmlns='http://www.w3.org/2000/svg'
-              className='mr-2 h-6 w-6'
-              fill='none'
-              viewBox='0 0 24 24'
-              stroke='currentColor'
-            >
-              <path
-                strokeLinecap='round'
-                strokeLinejoin='round'
-                strokeWidth={2}
-                d='M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z'
-              />
-            </svg>
-            PDF
-          </button>
-          <button
-            className={`flex cursor-pointer items-center justify-center rounded p-4 ${
-              selectedPhotos.length === 0 ?
-                'cursor-not-allowed bg-gray-300'
-              : 'bg-blue-600 hover:bg-blue-700'
-            } text-white`}
-            onClick={() => handlePhotoPrint('png')}
-          >
-            <svg
-              xmlns='http://www.w3.org/2000/svg'
-              className='mr-2 h-5 w-5'
-              fill='none'
-              viewBox='0 0 24 24'
-              stroke='currentColor'
-            >
-              <path
-                strokeLinecap='round'
-                strokeLinejoin='round'
-                strokeWidth={2}
-                d='M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4'
-              />
-            </svg>
-            PNG
-          </button>
-
-          <button
-            className={`flex cursor-pointer items-center justify-center rounded bg-green-600 p-4 text-white hover:bg-green-700 disabled:cursor-not-allowed disabled:bg-gray-300`}
-            disabled={clickedCnt < 3}
-            onClick={() => navigate('/')}
-          >
-            종료
-          </button>
-        </div>
+        <ExportButtons
+          handlePhotoPrint={handlePhotoPrint}
+          clickedCnt={clickedCnt}
+          selectedPhotosCount={selectedPhotosCount}
+        />
       </div>
     </div>
   );
