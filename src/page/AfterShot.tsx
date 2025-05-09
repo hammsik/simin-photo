@@ -1,5 +1,5 @@
 import { useRef, useState } from 'react';
-import { useLocation, useNavigate } from 'react-router-dom';
+import { useLocation } from 'react-router-dom';
 import { useReactToPrint } from 'react-to-print';
 import html2canvas from 'html2canvas';
 import { PhotoGrid } from '../components/aftershot/PhotoGrid';

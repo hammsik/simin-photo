@@ -16,12 +16,9 @@ export const ExportButtons = ({
   return (
     <div className='flex gap-4'>
       <button
-        className={`flex cursor-pointer items-center justify-center rounded p-4 ${
-          selectedPhotosCount === 0 ?
-            'cursor-not-allowed bg-gray-300'
-          : 'bg-rose-400 hover:bg-rose-500'
-        } text-white`}
+        className='flex cursor-pointer items-center justify-center rounded bg-rose-500 p-4 text-white hover:bg-rose-600 disabled:cursor-not-allowed disabled:bg-gray-300'
         onClick={() => handlePhotoPrint('pdf')}
+        disabled={selectedPhotosCount < 4}
       >
         <svg
           xmlns='http://www.w3.org/2000/svg'
@@ -54,12 +51,9 @@ export const ExportButtons = ({
         PDF
       </button>
       <button
-        className={`flex cursor-pointer items-center justify-center rounded p-4 ${
-          selectedPhotosCount === 0 ?
-            'cursor-not-allowed bg-gray-300'
-          : 'bg-blue-600 hover:bg-blue-700'
-        } text-white`}
+        className='flex cursor-pointer items-center justify-center rounded bg-blue-600 p-4 text-white hover:bg-blue-700 disabled:cursor-not-allowed disabled:bg-gray-300'
         onClick={() => handlePhotoPrint('png')}
+        disabled={selectedPhotosCount < 4}
       >
         <svg
           xmlns='http://www.w3.org/2000/svg'

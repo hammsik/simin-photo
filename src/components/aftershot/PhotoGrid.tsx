@@ -15,11 +15,10 @@ export const PhotoGrid = ({
     <div className='grid w-full grid-cols-3 items-center justify-center gap-10'>
       {photos.map((photo, index) => (
         <motion.button
-          whileHover={{ y: -10 }}
+          whileHover={{ y: selectedPhotos.includes(photo) ? 0 : -10 }}
           key={index}
-          className={`cursor-pointer drop-shadow-xl ${
-            selectedPhotos.includes(photo) && 'opacity-30'
-          }`}
+          className='cursor-pointer drop-shadow-xl disabled:cursor-not-allowed disabled:opacity-30'
+          disabled={selectedPhotos.includes(photo)}
           onClick={() => {
             if (!selectedPhotos.includes(photo)) {
               if (selectedPhotos.filter((p) => p !== null).length >= 4) {
