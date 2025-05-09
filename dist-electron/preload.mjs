@@ -8,9 +8,9 @@ electron.contextBridge.exposeInMainWorld("ipcRenderer", {
       (event, ...args2) => listener(event, ...args2)
     );
   },
-  off(...args) {
-    const [channel, ...omit] = args;
-    return electron.ipcRenderer.off(channel, ...omit);
+  removeAllListeners(...args) {
+    const [channel] = args;
+    return electron.ipcRenderer.removeAllListeners(channel);
   },
   send(...args) {
     const [channel, ...omit] = args;

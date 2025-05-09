@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { motion } from 'motion/react';
 import { useLocation, useNavigate } from 'react-router-dom';
 
@@ -8,18 +8,12 @@ import { useLocation, useNavigate } from 'react-router-dom';
 export const DuringShot = () => {
   const [photos, setPhotos] = useState<string[]>([]);
 
-  // 리스너가 이미 등록되었는지 추적하는 ref
-  const listenerRegisteredRef = useRef(false);
-
   const navigate = useNavigate();
   const photoName: string = useLocation().state?.photoName; // 파일 이름
-  console.log(photoName);
 
   useEffect(() => {
-    console.log('이미지 수신 리스너 등록 시도');
-
-    // 이벤트 핸들러 함수 정의
     const handleImageCaptured = (_event: unknown, imageUrl: string) => {
+      console.log('에엣 핸들러 호출');
       try {
         setPhotos((prevPhotos) => [...prevPhotos, imageUrl]);
       } catch (err) {
@@ -27,22 +21,15 @@ export const DuringShot = () => {
       }
     };
 
-    // 리스너가 이미 등록되어 있는지 확인
-    if (!listenerRegisteredRef.current) {
-      console.log('이미지 수신 리스너 등록 완료');
-      window.ipcRenderer.on('image-captured', handleImageCaptured);
-      listenerRegisteredRef.current = true;
-    } else {
-      console.log('이미지 수신 리스너가 이미 등록되어 있습니다.');
-    }
+    console.log('이벤트 리스너 등록', handleImageCaptured);
+    window.ipcRenderer.on('main-image-received', handleImageCaptured);
 
     // // 컴포넌트 언마운트 시 리스너 제거
-    // return () => {
-    //   console.log("이미지 수신 리스너 제거");
-    //   window.ipcRenderer.off("image-captured", handleImageCaptured);
-    //   listenerRegisteredRef.current = false;
-    // };
-  }, []);
+    return () => {
+      console.log('컴포넌트 언마운트 - 이벤트 리스너 제거');
+      window.ipcRenderer.removeAllListeners('main-image-received');
+    };
+  }, []); // 의존성 배열 비움
 
   // 편집하기 버튼 클릭 핸들러
   const handleEditClick = () => {

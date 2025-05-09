@@ -28,7 +28,7 @@ export const LiveView = () => {
         setPhotoUrls((prev) => [...prev, croppedImageUrl]);
 
         // 캡처한 이미지를 메인 창으로 전송
-        window.ipcRenderer.send('image-captured', croppedImageUrl);
+        window.ipcRenderer.send('live-image-captured', croppedImageUrl);
         console.log('이미지 전송 완료');
       }
     } catch (err) {

@@ -55,9 +55,10 @@ function createLiveWindow() {
   const url = VITE_DEV_SERVER_URL ? `${VITE_DEV_SERVER_URL}#/live` : `file://${path.join(RENDERER_DIST, "index.html")}#/camera`;
   cameraWin.loadURL(url);
   liveViewWin = cameraWin;
-  ipcMain.on("image-captured", (_, imageUrl) => {
+  ipcMain.on("live-image-captured", (_, imageUrl) => {
     if (win && !win.isDestroyed()) {
-      win.webContents.send("image-captured", imageUrl);
+      console.log("전달한다!");
+      win.webContents.send("main-image-received", imageUrl);
     }
   });
 }
