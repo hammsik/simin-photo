@@ -1,5 +1,5 @@
 import { motion } from 'motion/react';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { CustomDialog } from '../components/CustomDialog';
 
@@ -7,10 +7,10 @@ export const Intro = () => {
   const navigate = useNavigate();
   const [isOpenDialog, setIsOpenDialog] = useState(false);
 
-  const openCameraWindow = () => {
+  useEffect(() => {
     // Electron의 ipcRenderer를 통해 메인 프로세스에 새 창 요청
     window.ipcRenderer.send('open-camera-window');
-  };
+  }, []);
 
   return (
     <div className='flex size-full flex-col items-center justify-center'>
@@ -37,7 +37,6 @@ export const Intro = () => {
               return;
             }
             navigate('/during-shot', { state: { photoName } });
-            openCameraWindow();
           }}
           cancel={() => setIsOpenDialog(false)}
         />

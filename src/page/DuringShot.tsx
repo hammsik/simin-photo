@@ -2,9 +2,6 @@ import { useEffect, useState } from 'react';
 import { motion } from 'motion/react';
 import { useLocation, useNavigate } from 'react-router-dom';
 
-// TODO: 3 2 1 카운트다운 애니메이션 추가
-// TODO: DuringShot에서 마우스 클릭 감지하도록
-
 export const DuringShot = () => {
   const [photos, setPhotos] = useState<string[]>([]);
 
@@ -38,7 +35,6 @@ export const DuringShot = () => {
       if (e.code === 'ArrowLeft') {
         e.preventDefault(); // 기본 스크롤 동작 방지
         window.ipcRenderer.send('shutter-release');
-        console.log('눌렸다');
       }
     };
 

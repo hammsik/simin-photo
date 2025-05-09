@@ -11,14 +11,12 @@ export const LiveView = () => {
 
   // captureScreen 함수를 useCallback으로 메모이제이션
   const captureScreen = useCallback(async () => {
-    console.log('찰칵');
     try {
       const sources = await window.ipcRenderer.captureScreen();
       setShutterReleaseCnt((prev) => prev + 1);
 
       if (sources && sources.length > 0) {
         const source = sources[0];
-        console.log(source);
         const fullScreenImageUrl = source.thumbnail.toDataURL();
         const croppedImageUrl = await cropImage(fullScreenImageUrl);
 
@@ -27,7 +25,6 @@ export const LiveView = () => {
 
         // 캡처한 이미지를 메인 창으로 전송
         window.ipcRenderer.send('live-image-captured', croppedImageUrl);
-        console.log('이미지 전송 완료');
       }
     } catch (err) {
       alert(`화면 캡쳐 및 크롭 중 오류 발생했습니다: ${err}`);
@@ -39,8 +36,6 @@ export const LiveView = () => {
   // 메인프로세스에서 shutter-release 메시지 수신 시 촬영
   useEffect(() => {
     window.ipcRenderer.on('live-shutter-release', () => {
-      console.log('shutter-release 수신');
-
       if (isCapturing || photoUrls.length >= 6) return;
       setIsCapturing(true);
 
@@ -150,7 +145,7 @@ export const LiveView = () => {
               {isCapturing && (
                 <motion.h2
                   className='absolute top-1/2 left-1/2 z-10 -translate-x-1/2 -translate-y-1/2 text-[200px] font-bold text-white text-shadow-lg'
-                  initial={{ opacity: 0, rotate: -240 }}
+                  initial={{ opacity: 0, rotate: -180 }}
                   animate={{ opacity: 1, rotate: 0 }}
                   transition={{ type: 'spring', stiffness: 300, damping: 20 }}
                   key={countdown}

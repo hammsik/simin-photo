@@ -57,7 +57,6 @@ function createLiveWindow() {
   liveViewWin = cameraWin;
   ipcMain.on("live-image-captured", (_, imageUrl) => {
     if (win && !win.isDestroyed()) {
-      console.log("전달한다!");
       win.webContents.send("main-image-received", imageUrl);
     }
   });

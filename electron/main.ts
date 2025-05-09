@@ -84,7 +84,6 @@ function createLiveWindow() {
   // LiveView에서 캡처한 이미지를 메인 윈도우로 전달
   ipcMain.on('live-image-captured', (_, imageUrl) => {
     if (win && !win.isDestroyed()) {
-      console.log('전달한다!');
       win.webContents.send('main-image-received', imageUrl);
     }
   });
