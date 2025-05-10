@@ -11,10 +11,10 @@ export const PhotoFrame = ({
   selectedFrame,
   setImageUrls,
 }: PhotoFrameProps) => (
-  <div className='full-page-image relative flex size-full flex-col'>
+  <div className='full-page-image relative flex w-full flex-col'>
     <img
       src={selectedFrame}
-      className='pointer-events-none z-20 h-[900px] object-contain print:h-full print:w-full'
+      className='pointer-events-none z-20 h-[830px] object-contain print:h-full print:w-full'
     />
     {imageUrls.length > 0 &&
       imageUrls.map((url, index) =>

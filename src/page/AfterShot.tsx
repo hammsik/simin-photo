@@ -115,14 +115,16 @@ export const AfterShot = () => {
   const selectedPhotosCount = selectedPhotos.filter((p) => p !== null).length;
 
   return (
-    <div className='relative flex size-full items-center justify-between'>
-      <div className='flex h-full w-2/3 flex-col gap-12 p-12'>
+    <div className='relative flex size-full items-center gap-24 p-8'>
+      <div className='flex h-full w-[55%] flex-col'>
+        <h2 className='mb-4 text-2xl font-bold'>사진 선택</h2>
         <PhotoGrid
           photos={photos}
           selectedPhotos={selectedPhotos}
           setSelectedPhotos={setSelectedPhotos}
         />
 
+        <h2 className='mt-8 mb-4 text-2xl font-bold'>프레임 선택</h2>
         <FrameSelector
           customFrameUrls={customFrameUrls}
           solidFrameUrls={solidFrameUrls}
@@ -130,21 +132,23 @@ export const AfterShot = () => {
         />
       </div>
 
-      <div className='flex h-full flex-col items-center justify-center gap-6 p-6 pr-20'>
-        <PhotoPreview
-          selectedFrame={selectedFrame}
-          selectedPhotos={selectedPhotos}
-          setSelectedPhotos={setSelectedPhotos}
-          photoRef={photoRef}
-          pngExportRef={pngExportRef}
-        />
-
-        <ExportButtons
-          handlePhotoPrint={handlePhotoPrint}
-          clickedCnt={clickedCnt}
-          selectedPhotosCount={selectedPhotosCount}
-        />
+      <div className='flex h-full flex-col'>
+        <h2 className='mb-4 text-2xl font-bold'>미리보기</h2>
+        <div className='flex h-full flex-col justify-center rounded-2xl bg-black/8 p-8'>
+          <PhotoPreview
+            selectedFrame={selectedFrame}
+            selectedPhotos={selectedPhotos}
+            setSelectedPhotos={setSelectedPhotos}
+            photoRef={photoRef}
+            pngExportRef={pngExportRef}
+          />
+        </div>
       </div>
+      <ExportButtons
+        handlePhotoPrint={handlePhotoPrint}
+        clickedCnt={clickedCnt}
+        selectedPhotosCount={selectedPhotosCount}
+      />
     </div>
   );
 };
