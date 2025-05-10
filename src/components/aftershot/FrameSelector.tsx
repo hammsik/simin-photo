@@ -10,30 +10,37 @@ export const FrameSelector = ({
   setSelectedFrame,
 }: FrameSelectorProps) => {
   return (
-    <div className='flex size-full gap-30'>
+    <div className='flex size-full gap-10 rounded-2xl bg-black/8 p-8 pb-4'>
       <div className='flex h-full flex-col gap-4'>
-        <h3 className='text-2xl font-bold'>커스텀 프레임</h3>
         <div className='flex h-full gap-10'>
           {customFrameUrls.map((url, index) => (
-            <img
-              src={url}
-              key={index}
-              onClick={() => setSelectedFrame(url)}
-              className='h-80 cursor-pointer object-contain transition hover:scale-95'
-            />
+            <div className='flex flex-col items-center gap-3' key={index}>
+              <img
+                src={url}
+                onClick={() => setSelectedFrame(url)}
+                className='h-72 cursor-pointer object-contain transition hover:scale-95'
+              />
+              <p className='rounded-md bg-white px-2 py-1 text-lg'>
+                커스텀 {index + 1}
+              </p>
+            </div>
           ))}
         </div>
       </div>
+      <div className='w-px bg-black/20' />
       <div className='flex h-full flex-col gap-4'>
-        <h3 className='text-2xl font-bold'>단색 프레임</h3>
         <div className='flex h-full gap-10'>
           {solidFrameUrls.map((url, index) => (
-            <img
-              src={url}
-              key={index}
-              onClick={() => setSelectedFrame(url)}
-              className='h-80 cursor-pointer object-contain transition hover:scale-95'
-            />
+            <div className='flex flex-col items-center gap-3' key={index}>
+              <img
+                src={url}
+                onClick={() => setSelectedFrame(url)}
+                className='h-72 cursor-pointer object-contain transition hover:scale-95'
+              />
+              <p className='rounded-md bg-white px-2 py-1 text-lg'>
+                단색 {index + 1}
+              </p>
+            </div>
           ))}
         </div>
       </div>

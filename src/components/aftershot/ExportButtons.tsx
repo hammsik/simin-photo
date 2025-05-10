@@ -14,9 +14,9 @@ export const ExportButtons = ({
   const navigate = useNavigate();
 
   return (
-    <div className='flex gap-4'>
+    <div className='flex flex-col gap-12'>
       <button
-        className='flex cursor-pointer items-center justify-center rounded bg-rose-500 p-4 text-white hover:bg-rose-600 disabled:cursor-not-allowed disabled:bg-gray-300'
+        className='flex cursor-pointer items-center justify-center rounded bg-rose-500 p-4 text-white hover:bg-rose-600 disabled:cursor-not-allowed disabled:bg-black/30'
         onClick={() => handlePhotoPrint('pdf')}
         disabled={selectedPhotosCount < 4}
       >
@@ -51,7 +51,7 @@ export const ExportButtons = ({
         PDF
       </button>
       <button
-        className='flex cursor-pointer items-center justify-center rounded bg-blue-600 p-4 text-white hover:bg-blue-700 disabled:cursor-not-allowed disabled:bg-gray-300'
+        className='flex cursor-pointer items-center justify-center rounded bg-blue-600 p-4 text-white hover:bg-blue-700 disabled:cursor-not-allowed disabled:bg-black/30'
         onClick={() => handlePhotoPrint('png')}
         disabled={selectedPhotosCount < 4}
       >
@@ -73,7 +73,7 @@ export const ExportButtons = ({
       </button>
 
       <button
-        className={`flex cursor-pointer items-center justify-center rounded bg-green-600 p-4 text-white hover:bg-green-700 disabled:cursor-not-allowed disabled:bg-gray-300`}
+        className={`flex cursor-pointer items-center justify-center rounded bg-green-600 p-4 text-white hover:bg-green-700 disabled:cursor-not-allowed disabled:bg-black/30`}
         disabled={clickedCnt < 3}
         onClick={() => navigate('/')}
       >
