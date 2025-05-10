@@ -44,7 +44,7 @@ export const PhotoGrid = ({
               alt={`촬영한 사진 ${index + 1}`}
               className='w-full rounded-md object-cover'
             />
-            <div className='absolute right-2 bottom-2 flex size-8 items-center justify-center rounded-md bg-white/70'>
+            <div className='absolute right-0 bottom-0 flex size-8 items-center justify-center rounded-md rounded-tr-none rounded-bl-none bg-white'>
               <p>{index + 1}</p>
             </div>
           </motion.button>

@@ -1,4 +1,4 @@
-import { useEffect, useState, useCallback } from 'react';
+import { useEffect, useState, useCallback, useRef } from 'react';
 import { cropImage } from '../utils/imageUtils';
 import { motion } from 'motion/react';
 
@@ -9,11 +9,30 @@ export const LiveView = () => {
   const [isFinished, setIsFinished] = useState(false);
   const [countdown, setCountdown] = useState<number>(3);
 
+  const shutterSoundRef = useRef<HTMLAudioElement | null>(null);
+
+  // 컴포넌트 마운트 시 오디오 객체 생성
+  useEffect(() => {
+    shutterSoundRef.current = new Audio('/shutterRelease.mp3');
+    return () => {
+      if (shutterSoundRef.current) {
+        shutterSoundRef.current.pause();
+        shutterSoundRef.current = null;
+      }
+    };
+  }, []);
+
   // captureScreen 함수를 useCallback으로 메모이제이션
   const captureScreen = useCallback(async () => {
     try {
       const sources = await window.ipcRenderer.captureScreen();
       setShutterReleaseCnt((prev) => prev + 1);
+
+      // shutterRelase.mp3 재생
+      if (shutterSoundRef.current) {
+        shutterSoundRef.current.currentTime = 0;
+        shutterSoundRef.current.play();
+      }
 
       if (sources && sources.length > 0) {
         const source = sources[0];

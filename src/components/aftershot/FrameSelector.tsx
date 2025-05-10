@@ -10,7 +10,7 @@ export const FrameSelector = ({
   setSelectedFrame,
 }: FrameSelectorProps) => {
   return (
-    <div className='flex size-full gap-10 rounded-2xl bg-black/8 p-8 pb-6'>
+    <div className='flex size-full gap-10 rounded-2xl bg-black/8 p-8 pb-4'>
       <div className='flex h-full flex-col gap-4'>
         <div className='flex h-full gap-10'>
           {customFrameUrls.map((url, index) => (
@@ -20,7 +20,9 @@ export const FrameSelector = ({
                 onClick={() => setSelectedFrame(url)}
                 className='h-72 cursor-pointer object-contain transition hover:scale-95'
               />
-              <p className='text-lg'>커스텀 {index + 1}</p>
+              <p className='rounded-md bg-white px-2 py-1 text-lg'>
+                커스텀 {index + 1}
+              </p>
             </div>
           ))}
         </div>
@@ -35,7 +37,9 @@ export const FrameSelector = ({
                 onClick={() => setSelectedFrame(url)}
                 className='h-72 cursor-pointer object-contain transition hover:scale-95'
               />
-              <p className='text-lg'>단색 {index + 1}</p>
+              <p className='rounded-md bg-white px-2 py-1 text-lg'>
+                단색 {index + 1}
+              </p>
             </div>
           ))}
         </div>
